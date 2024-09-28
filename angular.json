@@ -30,6 +30,7 @@
               }
             ],
             "styles": [
+              "node_modules/gardevoir/dist/index.min.css",
               "src/styles.css"
             ],
             "scripts": [],
