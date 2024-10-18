@@ -4,7 +4,7 @@ const routes: Route[] = [
   {
     path: '',
     loadComponent: () =>
-      import('@core/auth-layout/auth-layout.component'),
+      import('@app/core/layout/auth-layout/auth-layout.component'),
     children: [
       {
         path: 'login',

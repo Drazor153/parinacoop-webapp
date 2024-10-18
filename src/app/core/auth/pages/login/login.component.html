@@ -1,11 +1,17 @@
 <form (ngSubmit)="onSubmit()" [formGroup]="clientLoginForm">
-    <label>
-        <span>Rut del Cliente</span>
-        <input type="text" formControlName="rut">
-    </label>
-    <label>
-        <span>Contraseña</span>
-        <input type="password" formControlName="password">
-    </label>
-    <button type="submit" [disabled]="clientLoginForm.invalid">Iniciar sesión</button>
+  <label>
+    <span>Rut del Cliente</span>
+    <input type="text" formControlName="rut" />
+  </label>
+  <label>
+    <span>Contraseña</span>
+    <input type="password" formControlName="password" />
+  </label>
+  <button type="submit" [disabled]="clientLoginForm.invalid">
+    Iniciar sesión
+  </button>
 </form>
+
+<div class="h-[1000px] bg-red-400">
+
+</div>
