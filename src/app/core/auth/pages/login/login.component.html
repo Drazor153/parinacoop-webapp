@@ -1,4 +1,4 @@
-<main class="flex h-full flex-col items-center mt-20 gap-5">
+<main class="mt-20 flex h-full flex-col items-center gap-5">
   <h1 class="w-80 text-pretty text-center text-2xl">
     Bienvenido a Parinacoop Cooperativa en Línea
   </h1>
@@ -10,27 +10,21 @@
       (ngSubmit)="onSubmit()"
       [formGroup]="loginForm"
     >
-      <label class="flex flex-col">
-        <span class="text-sm font-medium uppercase">Rut del cliente</span>
-        <input
-          class="h-10 w-72 rounded-md border border-[#A6A6A6] px-2"
-          type="text"
-          formControlName="rut"
-        />
-      </label>
-      <label class="flex flex-col">
-        <span class="text-sm font-medium uppercase">Clave</span>
-        <input
-          class="h-10 w-72 rounded-md border border-[#A6A6A6] px-2"
-          type="password"
-          formControlName="password"
-        />
-      </label>
+      <app-form-field
+        label="Rut del cliente"
+        type="text"
+        formControlName="rut"
+      />
+      <app-form-field
+        label="Clave"
+        type="password"
+        formControlName="password"
+      />
       <button
         [ngClass]="[
-          'bg-primary-500 h-10 w-72 rounded-full text-white transition-colors duration-100',
+          'h-10 w-72 rounded-full bg-primary-500 text-white transition-colors duration-100',
           'disabled:bg-primary-100 disabled:text-primary-400',
-          'hover:bg-primary-600'
+          'hover:bg-primary-600',
         ]"
         type="submit"
         [disabled]="loginForm.invalid"
