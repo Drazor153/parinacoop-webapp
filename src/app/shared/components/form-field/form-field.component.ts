@@ -23,6 +23,7 @@ import {
 export class FormFieldComponent implements ControlValueAccessor {
   @Input() label: string = '';
   @Input() type: string = 'text';
+  @Input() placeholder: string = '';
   value: string = '';
 
   onChangeCva = (_value: any) => {};

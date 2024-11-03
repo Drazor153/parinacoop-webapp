@@ -6,7 +6,8 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { FormFieldComponent } from '@app/shared/components/form-field/form-field.component';
+
+import { FormFieldComponent } from '@shared/components/form-field/form-field.component';
 
 @Component({
   selector: 'app-login',
