@@ -4,8 +4,13 @@ const routes: Route[] = [
   {
     path: '',
     loadComponent: () =>
-      import('@app/core/layout/auth-layout/auth-layout.component'),
+      import('@core/layout/auth-layout/auth-layout.component'),
     children: [
+      {
+        path: '',
+        redirectTo: 'login',
+        pathMatch: 'full',
+      },
       {
         path: 'login',
         loadComponent: () => import('./pages/login/login.component'),
