@@ -14,7 +14,6 @@ import { FormFieldComponent } from '@shared/components/form-field';
   standalone: true,
   imports: [ReactiveFormsModule, NgClass, FormFieldComponent],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.css',
 })
 export default class RegisterComponent {
   private readonly formBuilder = inject(FormBuilder);

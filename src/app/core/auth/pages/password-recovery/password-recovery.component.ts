@@ -5,7 +5,6 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './password-recovery.component.html',
-  styleUrl: './password-recovery.component.css'
 })
 export default class PasswordRecoveryComponent {
 

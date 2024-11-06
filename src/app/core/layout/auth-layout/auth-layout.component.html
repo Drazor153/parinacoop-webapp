@@ -1,34 +1,4 @@
-<header>
-  <nav class="flex items-center justify-around bg-nav-color">
-    <div class="flex w-[25rem] justify-center">
-      <img
-        src="images/logo-corfo.png"
-        class="h-20"
-        alt="Corfo crédito con aval de Corfo"
-      />
-    </div>
-    <div class="flex w-[25rem] justify-center">
-      <img
-        src="images/logo-parinacoop.png"
-        class="h-20"
-        alt="Parinacoop cooperativa de ahorro y crédito"
-      />
-    </div>
-    <div class="flex w-[25rem] justify-center gap-3">
-      <a
-        class="inline-block w-48 rounded-full border border-secondary py-2 text-center text-secondary"
-        [routerLink]="['register']"
-        >Hazte cliente</a
-      >
-      <a
-        class="inline-block w-48 rounded-full bg-secondary py-2 text-center text-white"
-        [routerLink]="['login']"
-        routerLinkActive="active"
-        >Banca en Línea</a
-      >
-    </div>
-  </nav>
-</header>
+<app-header/>
 <main class="overflow-y-auto">
   <router-outlet />
 </main>
