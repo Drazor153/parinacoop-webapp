@@ -1,13 +1,21 @@
 import { NgClass } from '@angular/common';
 import { Component } from '@angular/core';
 import {
-  FormControl,
-  FormGroup,
+  AbstractControl,
+  FormBuilder,
   ReactiveFormsModule,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
+import { FormGroupTypeBuilder } from '@app/shared/types';
+import { validateRut, getRutDigits } from '@fdograph/rut-utilities';
 
 import { FormFieldComponent } from '@shared/components/form-field/form-field.component';
+
+type LoginForm = FormGroupTypeBuilder<{
+  run: string;
+  password: string;
+}>;
 
 @Component({
   selector: 'app-login',
@@ -16,14 +24,22 @@ import { FormFieldComponent } from '@shared/components/form-field/form-field.com
   templateUrl: './login.component.html',
 })
 export default class LoginComponent {
-  loginForm = new FormGroup({
-    rut: new FormControl('', [Validators.required]),
-    password: new FormControl('', [Validators.required]),
-  });
+  loginForm!: LoginForm;
 
-  constructor() {}
+  constructor(private readonly fb: FormBuilder) {
+    this.loginForm = this.fb.group({
+      run: ['', [Validators.required, runValidator]],
+      password: ['', [Validators.required]],
+    });
+  }
 
   onSubmit(): void {
-    console.log(this.loginForm.value);
+    console.log(getRutDigits(this.loginForm.value.run!));
   }
 }
+
+export const runValidator: ValidatorFn = (control: AbstractControl) => {
+  const value = control.value;
+  
+  return validateRut(value) ? null : { incorrectFormat: true };
+};

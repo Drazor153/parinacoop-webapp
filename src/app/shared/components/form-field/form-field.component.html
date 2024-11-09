@@ -4,7 +4,11 @@
     class="h-10 w-72 rounded-md border border-[#A6A6A6] px-2"
     #input
     [type]="type"
+    (focus)="onFocus()"
+    (blur)="onBlur()"
+    (keypress)="onKeyPress($event)"
     (input)="valueChanged(input.value)"
     [placeholder]="placeholder"
+    [value]="value"
   />
 </label>

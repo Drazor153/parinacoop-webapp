@@ -38,6 +38,9 @@ importers:
       '@angular/ssr':
         specifier: ^18.2.4
         version: 18.2.4(@angular/common@18.2.4(@angular/core@18.2.4(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.2.4(rxjs@7.8.1)(zone.js@0.14.10))
+      '@fdograph/rut-utilities':
+        specifier: ^1.4.0
+        version: 1.4.0
       express:
         specifier: ^4.18.2
         version: 4.21.0
@@ -1271,6 +1274,9 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@fdograph/rut-utilities@1.4.0':
+    resolution: {integrity: sha512-M+t9YzoI0QIuLhkovXAIcj14dWqVs6YsbJy3fpASnFgSCkPEkZgZvc+LKJvkB/AkAe3/U8c2hDf4ikw1pajazw==}
 
   '@inquirer/checkbox@2.5.0':
     resolution: {integrity: sha512-sMgdETOfi2dUHT8r7TT1BTKOwNvdDGFDXYWtQ2J69SvlYNntk9I/gJe7r5yvMwwsuKnYbuRs3pNhx4tgNck5aA==}
@@ -6015,6 +6021,8 @@ snapshots:
 
   '@esbuild/win32-x64@0.23.0':
     optional: true
+
+  '@fdograph/rut-utilities@1.4.0': {}
 
   '@inquirer/checkbox@2.5.0':
     dependencies:
