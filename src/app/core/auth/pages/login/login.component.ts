@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -7,10 +7,13 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { FormGroupTypeBuilder } from '@app/shared/types';
 import { validateRut, getRutDigits } from '@fdograph/rut-utilities';
 
+import { FormGroupTypeBuilder } from '@app/shared/types';
 import { FormFieldComponent } from '@shared/components/form-field/form-field.component';
+
+import { AuthService } from '@core/auth/auth.service';
+import { Subscription } from 'rxjs';
 
 type LoginForm = FormGroupTypeBuilder<{
   run: string;
@@ -23,23 +26,42 @@ type LoginForm = FormGroupTypeBuilder<{
   imports: [ReactiveFormsModule, NgClass, FormFieldComponent],
   templateUrl: './login.component.html',
 })
-export default class LoginComponent {
+export default class LoginComponent implements OnInit, OnDestroy {
   loginForm!: LoginForm;
-
-  constructor(private readonly fb: FormBuilder) {
+  loginSuscription!: Subscription;
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly authService: AuthService,
+  ) {}
+  ngOnInit(): void {
     this.loginForm = this.fb.group({
       run: ['', [Validators.required, runValidator]],
       password: ['', [Validators.required]],
     });
   }
 
+  ngOnDestroy(): void {
+    this.loginSuscription?.unsubscribe();
+  }
+
   onSubmit(): void {
-    console.log(getRutDigits(this.loginForm.value.run!));
+    const credentials = {
+      run: +getRutDigits(this.loginForm.value.run!),
+      password: this.loginForm.value.password!,
+    };
+    this.loginSuscription = this.authService.login(credentials).subscribe({
+      next: (response) => {
+        console.log(response);
+      },
+      error: ({ error }) => {
+        console.error(error.message);
+      },
+    });
   }
 }
 
 export const runValidator: ValidatorFn = (control: AbstractControl) => {
   const value = control.value;
-  
+
   return validateRut(value) ? null : { incorrectFormat: true };
 };
