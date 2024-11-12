@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { FormGroupTypeBuilder } from '@shared/types';
-import { FormFieldComponent } from '@shared/components/form-field';
+import { FormFieldComponent } from '@app/shared/components';
 
 type DataForm = FormGroupTypeBuilder<{
   run: string;
