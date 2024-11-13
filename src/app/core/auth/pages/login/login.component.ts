@@ -7,13 +7,15 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { validateRut, getRutDigits } from '@fdograph/rut-utilities';
 
 import { FormGroupTypeBuilder } from '@app/shared/types';
+import { SpinnerComponent } from '@app/shared/components';
 import { FormFieldComponent } from '@shared/components/form-field/form-field.component';
 
-import { AuthService } from '@core/auth/auth.service';
-import { Subscription } from 'rxjs';
+import { LoginService } from './login.service';
 
 type LoginForm = FormGroupTypeBuilder<{
   run: string;
@@ -23,15 +25,19 @@ type LoginForm = FormGroupTypeBuilder<{
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass, FormFieldComponent],
+  imports: [ReactiveFormsModule, NgClass, FormFieldComponent, SpinnerComponent],
   templateUrl: './login.component.html',
 })
 export default class LoginComponent implements OnInit, OnDestroy {
   loginForm!: LoginForm;
-  loginSuscription!: Subscription;
+  loginSubscription!: Subscription;
+
+  isSubmitting: boolean = false;
+  loginErrorMsg: string = '';
   constructor(
     private readonly fb: FormBuilder,
-    private readonly authService: AuthService,
+    private readonly loginService: LoginService,
+    private readonly router: Router,
   ) {}
   ngOnInit(): void {
     this.loginForm = this.fb.group({
@@ -41,7 +47,7 @@ export default class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.loginSuscription?.unsubscribe();
+    this.loginSubscription?.unsubscribe();
   }
 
   onSubmit(): void {
@@ -49,12 +55,15 @@ export default class LoginComponent implements OnInit, OnDestroy {
       run: +getRutDigits(this.loginForm.value.run!),
       password: this.loginForm.value.password!,
     };
-    this.loginSuscription = this.authService.login(credentials).subscribe({
+    this.loginErrorMsg = '';
+    this.isSubmitting = true;
+    this.loginSubscription = this.loginService.login(credentials).subscribe({
       next: (response) => {
-        console.log(response);
+        this.router.navigate(['/home']);
       },
       error: ({ error }) => {
-        console.error(error.message);
+        this.loginErrorMsg = error.message;
+        this.isSubmitting = false;
       },
     });
   }

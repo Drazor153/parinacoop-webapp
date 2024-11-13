@@ -3,7 +3,7 @@
     Bienvenido a Parinacoop Cooperativa en Línea
   </h1>
   <div
-    class="flex size-96 flex-col items-center justify-center rounded-xl bg-[#F6F6F6] py-5"
+    class="flex h-[25rem] w-96 flex-col items-center justify-center gap-5 rounded-xl bg-[#F6F6F6] py-5"
   >
     <form
       class="flex flex-col items-center justify-center gap-10"
@@ -28,11 +28,21 @@
           'hover:bg-primary-600',
         ]"
         type="submit"
-        [disabled]="loginForm.invalid"
+        [disabled]="loginForm.invalid || isSubmitting"
       >
-        Ingresar
+        @if (isSubmitting) {
+          <app-spinner />
+        } @else {
+          Ingresar
+        }
       </button>
     </form>
-    <a class="mt-5 italic" href="#">Olvidé mi clave</a>
+    <ul
+      class="w-72 list-disc rounded-md border border-red-300 bg-red-50 px-8 py-2 text-sm text-red-400"
+      [ngClass]="{ 'invisible': !loginErrorMsg }"
+    >
+      <li class="">{{ loginErrorMsg }}</li>
+    </ul>
+    <a class="italic" href="#">Olvidé mi clave</a>
   </div>
 </main>
