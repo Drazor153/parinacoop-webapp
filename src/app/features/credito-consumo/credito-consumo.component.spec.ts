@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import DapComponent from './dap.component';
+import CreditoConsumoComponent from './credito-consumo.component';
 
-describe('DapComponent', () => {
-  let component: DapComponent;
-  let fixture: ComponentFixture<DapComponent>;
+describe('CreditoConsumoComponent', () => {
+  let component: CreditoConsumoComponent;
+  let fixture: ComponentFixture<CreditoConsumoComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DapComponent],
+      imports: [CreditoConsumoComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DapComponent);
+    fixture = TestBed.createComponent(CreditoConsumoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

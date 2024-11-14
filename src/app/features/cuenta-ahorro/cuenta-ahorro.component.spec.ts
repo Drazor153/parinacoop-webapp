@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import DapComponent from './dap.component';
+import CuentaAhorroComponent from './cuenta-ahorro.component';
 
-describe('DapComponent', () => {
-  let component: DapComponent;
-  let fixture: ComponentFixture<DapComponent>;
+describe('CuentaAhorroComponent', () => {
+  let component: CuentaAhorroComponent;
+  let fixture: ComponentFixture<CuentaAhorroComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DapComponent],
+      imports: [CuentaAhorroComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DapComponent);
+    fixture = TestBed.createComponent(CuentaAhorroComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

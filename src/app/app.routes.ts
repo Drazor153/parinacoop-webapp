@@ -17,6 +17,25 @@ export const routes: Routes = [
         path: 'deposito-a-plazo',
         loadComponent: () => import('./features/dap/dap.component'),
       },
+      {
+        path: 'perfil',
+        loadComponent: () => import('./features/profile/profile.component'),
+      },
+      {
+        path: 'cuentas-de-ahorro',
+        loadComponent: () =>
+          import('./features/cuenta-ahorro/cuenta-ahorro.component'),
+      },
+      {
+        path: 'creditos-de-consumo',
+        loadComponent: () =>
+          import('./features/credito-consumo/credito-consumo.component'),
+      },
+      {
+        path: 'creditos-comerciales',
+        loadComponent: () =>
+          import('./features/credito-comercial/credito-comercial.component'),
+      },
     ],
   },
 ];

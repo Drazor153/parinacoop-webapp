@@ -5,8 +5,5 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './dap.component.html',
-  styleUrl: './dap.component.scss'
 })
-export default class DapComponent {
-
-}
+export default class DapComponent {}
