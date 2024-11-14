@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-type SVGIcon = 'marker' | 'WhatsApp' | 'mail';
+type SVGIcon = 'marker' | 'WhatsApp' | 'mail' | 'logout';
 
 @Component({
   selector: 'app-svg-icon',

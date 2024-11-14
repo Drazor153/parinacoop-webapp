@@ -6,17 +6,17 @@ export const routes: Routes = [
     path: '',
     loadComponent: () =>
       import('./core/layout/auth-layout/auth-layout.component'),
-    canActivate: [authGuard],
     loadChildren: () => import('./core/auth/auth.routes'),
   },
   {
     path: 'home',
     loadComponent: () =>
       import('./core/layout/home-layout/home-layout.component'),
-  },
-  {
-    path: '**',
-    redirectTo: 'home',
-    pathMatch: 'full',
+    children: [
+      {
+        path: 'deposito-a-plazo',
+        loadComponent: () => import('./features/dap/dap.component'),
+      },
+    ],
   },
 ];

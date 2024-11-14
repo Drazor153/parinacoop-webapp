@@ -1,3 +1,31 @@
-<p>home-layout works!</p>
-<button type="button" (click)="logout()"> Logout </button>
-<router-outlet />
+<header class="flex flex-col items-center bg-nav-color">
+  <div class="flex w-full max-w-7xl items-center justify-between px-10">
+    <img
+      src="images/logo-parinacoop.png"
+      class="h-20"
+      alt="Parinacoop cooperativa de ahorro y crédito"
+    />
+    <button
+      class="flex items-center gap-2 text-secondary"
+      type="button"
+      (click)="logout()"
+    >
+      Cerrar sesión
+      <app-svg-icon icon="logout" />
+    </button>
+  </div>
+  <nav>
+    @for (navItem of navItems; track $index) {
+      <a
+        class="w-28 transition-colors duration-150"
+        [routerLink]="[navItem.link]"
+        [routerLinkActiveOptions]="{ exact: true }"
+        routerLinkActive="text-primary-500 border-b border-b-primary-500"
+        >{{ navItem.label }}</a
+      >
+    }
+  </nav>
+</header>
+<main class="overflow-y-auto">
+  <router-outlet />
+</main>
