@@ -51,21 +51,22 @@ export default class LoginComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    const credentials = {
-      run: +getRutDigits(this.loginForm.value.run!),
-      password: this.loginForm.value.password!,
-    };
-    this.loginErrorMsg = '';
-    this.isSubmitting = true;
-    this.loginSubscription = this.loginService.login(credentials).subscribe({
-      next: (response) => {
-        this.router.navigate(['/home']);
-      },
-      error: ({ error }) => {
-        this.loginErrorMsg = error.message;
-        this.isSubmitting = false;
-      },
-    });
+    this.router.navigate(['/home']);
+    // const credentials = {
+    //   run: +getRutDigits(this.loginForm.value.run!),
+    //   password: this.loginForm.value.password!,
+    // };
+    // this.loginErrorMsg = '';
+    // this.isSubmitting = true;
+    // this.loginSubscription = this.loginService.login(credentials).subscribe({
+    //   next: (response) => {
+    //     this.router.navigate(['/home']);
+    //   },
+    //   error: ({ error }) => {
+    //     this.loginErrorMsg = error.message;
+    //     this.isSubmitting = false;
+    //   },
+    // });
   }
 }
 

@@ -28,7 +28,7 @@
           'hover:bg-primary-600',
         ]"
         type="submit"
-        [disabled]="loginForm.invalid || isSubmitting"
+        [disabled]="!loginForm.invalid || isSubmitting"
       >
         @if (isSubmitting) {
           <app-spinner />

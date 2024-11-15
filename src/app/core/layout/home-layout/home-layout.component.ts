@@ -12,7 +12,7 @@ import {
   RouterLinkActive,
   RouterOutlet,
 } from '@angular/router';
-import { filter, Subscription } from 'rxjs';
+import { filter, max, Subscription } from 'rxjs';
 
 import { AuthService } from '@app/core/auth/services/auth.service';
 import { SvgIconComponent } from '@app/shared/components';
@@ -88,7 +88,7 @@ export default class HomeLayoutComponent implements AfterViewInit, OnDestroy {
     if (this.linkBackdrop) {
       this.linkBackdrop.nativeElement.style.setProperty(
         '--left',
-        `${index * 11}rem`,
+        `${Math.max(index, 0) * 11}rem`,
       );
     }
   }
