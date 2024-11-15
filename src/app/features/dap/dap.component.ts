@@ -2,15 +2,23 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SvgIconComponent } from '@app/shared/components';
 import { DapService } from './dap.service';
 import { Subscription } from 'rxjs';
-import { Dap } from './dap.model';
+import { Dap } from './models/dap.model';
 import { RouterLink } from '@angular/router';
 import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
-import { DapPipe } from '@app/shared/pipes';
+import { DapStatusPipe } from './pipes/dap-status.pipe';
+import { DapStatusEnum } from './models/dap-status.enum';
 
 @Component({
   selector: 'app-dap',
   standalone: true,
-  imports: [SvgIconComponent, RouterLink, DatePipe, NgClass, CurrencyPipe, DapPipe],
+  imports: [
+    SvgIconComponent,
+    RouterLink,
+    DatePipe,
+    NgClass,
+    CurrencyPipe,
+    DapStatusPipe,
+  ],
   templateUrl: './dap.component.html',
 })
 export default class DapComponent implements OnInit, OnDestroy {
@@ -24,11 +32,11 @@ export default class DapComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.dapSubscription = this.dapService.getDapList().subscribe((data) => {
       this.userDaps = data;
-      this.totalDaps = data.reduce(
-        (prev, cur) =>
-          prev + (cur.status === 'active' ? cur.initial_amount : 0),
-        0,
+      const { totalActiveDaps, totalProfit } = this.dapService.getTotals(
+        this.userDaps,
       );
+      this.totalDaps = totalActiveDaps;
+      this.totalProfit = totalProfit;
     });
   }
 

@@ -1,7 +1,10 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { DapStatusEnum } from '../models/dap-status.enum';
+
 type DapStatusKeys = {
-  [key: string]: string;
+  [key in DapStatusEnum]: string;
 };
+
 @Pipe({
   name: 'dapStatus',
   standalone: true,
@@ -14,7 +17,7 @@ export class DapStatusPipe implements PipeTransform {
     paid: 'Pagado',
   };
 
-  transform(value: string): string {
-    return this.keys[value] ?? 'Formato no válido';
+  transform(value: DapStatusEnum): string {
+    return this.keys[value] ?? value;
   }
 }

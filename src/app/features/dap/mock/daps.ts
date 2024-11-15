@@ -1,11 +1,12 @@
-import { Dap } from '../dap.model';
+import { DapStatusEnum } from '../models/dap-status.enum';
+import { Dap } from '../models/dap.model';
 
 export const dapsMock: Dap[] = [
   {
     id: 123456789,
     type: 'Renovable',
     currency_type: 'CLP',
-    status: 'active',
+    status: DapStatusEnum.ACTIVE,
     days: 30,
     initial_date: new Date('2024-09-31'),
     initial_amount: 500000,
@@ -18,7 +19,7 @@ export const dapsMock: Dap[] = [
     id: 123456780,
     type: 'Fijo',
     currency_type: 'CLP',
-    status: 'expired-pending',
+    status: DapStatusEnum.EXPIRED_PENDING,
     days: 60,
     initial_date: new Date('2024-08-21'),
     initial_amount: 1000000,
@@ -31,7 +32,7 @@ export const dapsMock: Dap[] = [
     id: 123436779,
     type: 'Fijo',
     currency_type: 'CLP',
-    status: 'paid',
+    status:DapStatusEnum.PAID,
     days: 30,
     initial_date: new Date('2024-09-20'),
     initial_amount: 250000,
