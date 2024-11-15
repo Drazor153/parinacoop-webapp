@@ -1,11 +1,27 @@
-<section class="flex flex-col items-center pt-2">
+<section class="flex flex-col items-center gap-5 pt-5">
   <h1 class="text-2xl">Inversiones: Depósitos a Plazo</h1>
-  <div>
-    <div></div>
-    <div></div>
+  <div class="grid w-full max-w-[40rem] grid-cols-2 gap-10">
+    <div
+      class="grid grid-rows-3 place-items-center rounded-lg border border-[#dcdcdc] bg-nav-color p-4 text-center"
+    >
+      <h3 class="text-pretty">Saldo total de los depósitos</h3>
+      <span class="text-lg font-bold">
+        {{ totalDaps | currency: 'CLP' : 'symbol' }}
+      </span>
+      <span class="text-base">Pesos chilenos (CLP)</span>
+    </div>
+    <div
+      class="grid grid-rows-3 place-items-center rounded-lg border border-[#dcdcdc] bg-nav-color p-4 text-center"
+    >
+      <h3 class="text-pretty">Ganancias totales de los depósitos</h3>
+      <span class="text-lg font-bold">
+        {{ totalProfit | currency: 'CLP' : 'symbol' }}
+      </span>
+      <span class="text-base">Pesos chilenos (CLP)</span>
+    </div>
   </div>
 
-  <section class="flex w-full max-w-[75rem] flex-col items-center gap-5 px-5">
+  <section class="flex w-full max-w-[75rem] flex-col items-center gap-2 px-5">
     <h2 class="text-2xl">Mis depósitos a plazo</h2>
     <a
       [routerLink]="['nuevo-deposito']"
@@ -20,7 +36,7 @@
         <article
           [ngClass]="[
             'grid grid-cols-[repeat(5,minmax(0,1fr))_8.3%] place-items-center',
-            'rounded-lg border border-[#dcdcdc] bg-nav-color text-sm py-2',
+            'rounded-lg border border-[#dcdcdc] bg-nav-color py-2 text-sm',
             '[&>div]:flex [&>div]:flex-col',
           ]"
         >
@@ -43,13 +59,13 @@
           <div>
             <span class="font-bold">Monto a recibir</span>
             <span>
-              {{ dap.final_amount }}
+              {{ dap.final_amount | currency: 'CLP' : 'symbol' }}
             </span>
           </div>
           <div>
             <span class="font-bold">Estado depósito</span>
             <span>
-              {{ dap.status }}
+              {{ dap.status | dap }}
             </span>
           </div>
           <a
