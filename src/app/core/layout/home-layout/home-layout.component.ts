@@ -50,17 +50,14 @@ export default class HomeLayoutComponent implements AfterViewInit, OnDestroy {
     {
       label: 'Cuentas de Ahorro',
       link: './cuentas-de-ahorro',
-      disabled: true,
     },
     {
       label: 'Créditos de Consumo',
       link: './creditos-de-consumo',
-      disabled: true,
     },
     {
       label: 'Créditos Comerciales',
       link: './creditos-comerciales',
-      disabled: true,
     },
     {
       label: 'Perfil',

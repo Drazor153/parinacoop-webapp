@@ -36,6 +36,10 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/credito-comercial/credito-comercial.component'),
       },
+      {
+        path: '**',
+        redirectTo: '',
+      },
     ],
   },
 ];
