@@ -15,7 +15,7 @@ export const routes: Routes = [
     children: [
       {
         path: 'deposito-a-plazo',
-        loadComponent: () => import('./features/dap/dap.component'),
+        loadChildren: () => import('./features/dap/dap.routes'),
       },
       {
         path: 'perfil',
