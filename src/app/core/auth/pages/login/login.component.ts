@@ -16,6 +16,7 @@ import { SpinnerComponent } from '@app/shared/components';
 import { FormFieldComponent } from '@shared/components/form-field/form-field.component';
 
 import { LoginService } from './login.service';
+import { ROUTE_TOKENS } from '@app/route-tokens';
 
 type LoginForm = FormGroupTypeBuilder<{
   run: string;
@@ -51,7 +52,7 @@ export default class LoginComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    this.router.navigate(['/home']);
+    this.router.navigate([ROUTE_TOKENS.CLIENT_PATH, ROUTE_TOKENS.CLIENT_HOME]);
     // const credentials = {
     //   run: +getRutDigits(this.loginForm.value.run!),
     //   password: this.loginForm.value.password!,
