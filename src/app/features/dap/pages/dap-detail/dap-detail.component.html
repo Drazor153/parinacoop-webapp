@@ -1,1 +1,70 @@
-<p>dap-detail works!</p>
+<section
+  class="flex w-full max-w-[75rem] flex-col items-center gap-5 place-self-center pt-5"
+>
+  <h1 class="text-2xl">Detalles Depósitos a plazo</h1>
+  <a
+    [routerLink]="['../']"
+    class="flex items-center gap-2 self-start text-primary-600 hover:underline"
+  >
+    <app-svg-icon icon="back" />
+    <span> Volver a mis depósitos </span>
+  </a>
+  <article class="flex w-full flex-col items-center gap-5">
+    <div
+      class="flex h-28 w-60 flex-col items-center justify-center rounded-xl border border-zinc-300 text-center font-medium"
+      [ngClass]="{ 'animate-pulse': !currentDap }"
+    >
+      @if (!currentDap) {
+        <div class="flex size-full items-center justify-center gap-2">
+          <span class="text-lg font-medium text-primary-950"
+            >Obteniendo info</span
+          >
+          <app-spinner />
+        </div>
+      } @else {
+        <span class="text-xl text-primary-950">Monto a recibir</span>
+        <span class="text-4xl text-primary-600">
+          {{ currentDap.final_amount | currency: 'CLP' : 'symbol' }}
+        </span>
+      }
+    </div>
+    <div
+      class="flex flex-col rounded-xl border border-primary-300 bg-primary-50 p-5"
+      [ngClass]="{ 'animate-pulse': !currentDap }"
+    >
+      @if (!currentDap) {
+        <div class="flex h-72 w-[35rem] items-center justify-center gap-5">
+          <span class="text-lg font-medium text-primary-950"
+            >Obteniendo información</span
+          >
+          <app-spinner />
+        </div>
+      } @else {
+        <dap-detail label="Número de depósito" value="{{ currentDap.id }}" />
+        <dap-detail
+          label="Tipo de moneda"
+          value="{{ currentDap.currency_type }}"
+        />
+        <dap-detail label="Tipo de depósito" value="{{ currentDap.type }}" />
+        <dap-detail
+          label="Vencimiento"
+          value="{{ currentDap.due_date | date: 'dd-MM-yyyy' }}"
+        />
+        <dap-detail
+          label="Estado depósito"
+          value="{{ currentDap.status | dapStatus }}"
+        />
+        <dap-detail
+          label="Fecha inicial"
+          value="{{ currentDap.initial_date | date: 'dd-MM-yyyy' }}"
+        />
+        <dap-detail label="Días del periodo" value="{{ currentDap.days }}" />
+        <dap-detail
+          label="Tasa de interés"
+          value="{{ currentDap.interest_rate | percent: '1.2-4' }}"
+        />
+        <dap-detail label="Ganancia" value="{{ currentDap.profit }}" />
+      }
+    </div>
+  </article>
+</section>

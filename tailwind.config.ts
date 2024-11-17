@@ -1,5 +1,5 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+import { Config } from 'tailwindcss';
+const config: Config = {
   content: ['./src/**/*.{html,ts}'],
   theme: {
     extend: {
@@ -19,8 +19,11 @@ module.exports = {
         },
         secondary: '#D9534F',
         'nav-color': '#F4F3F3',
+        body: '#52677b'
       },
     },
   },
   plugins: [],
 };
+
+export default config;
