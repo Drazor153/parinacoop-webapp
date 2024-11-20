@@ -17,6 +17,8 @@ import { authInterceptor } from './core/auth/auth.interceptor';
 
 import localeEsCl from '@angular/common/locales/es-CL';
 import { registerLocaleData } from '@angular/common';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 registerLocaleData(localeEsCl, 'es-CL');
 
@@ -29,6 +31,11 @@ export const appConfig: ApplicationConfig = {
     {
       provide: LOCALE_ID,
       useValue: 'es-CL',
+    },
+    provideAnimationsAsync(),
+    {
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: { appearance: 'outline' },
     },
   ],
 };

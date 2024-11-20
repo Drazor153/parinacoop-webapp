@@ -1,1 +1,14 @@
-<p>profile works!</p>
+<section>
+  <h1>Mi perfil</h1>
+  <form [formGroup]="profileForm" (submit)="updateProfile()">
+    <fieldset>
+      <mat-form-field>
+        <mat-label> aa</mat-label>
+          <input matInput type="text" name="" id="" formControlName="names">
+      </mat-form-field>
+    </fieldset>
+    <fieldset></fieldset>
+    <fieldset></fieldset>
+    <button [disabled]="profileForm.invalid">A</button>
+  </form>
+</section>
