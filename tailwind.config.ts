@@ -2,6 +2,9 @@ import { Config } from 'tailwindcss';
 const config: Config = {
   content: ['./src/**/*.{html,ts}'],
   theme: {
+    fontFamily: {
+      sans: ['Roboto', 'Helvetica Neue', 'sans-serif'],
+    },
     extend: {
       colors: {
         primary: {
@@ -19,7 +22,7 @@ const config: Config = {
         },
         secondary: '#D9534F',
         'nav-color': '#F4F3F3',
-        body: '#52677b'
+        body: '#52677b',
       },
     },
   },
