@@ -1,4 +1,4 @@
-<main class="flex h-full flex-col items-center gap-5">
+<section class="flex h-full flex-col items-center gap-5">
   <h1 class="mt-20 w-80 text-pretty text-center text-2xl">
     Bienvenido a Parinacoop Cooperativa en Línea
   </h1>
@@ -10,7 +10,7 @@
       (ngSubmit)="onSubmit()"
       [formGroup]="loginForm"
     >
-      <app-form-field
+      <!-- <app-form-field
         label="Rut del cliente"
         type="text"
         formControlName="run"
@@ -20,7 +20,7 @@
         label="Clave"
         type="password"
         formControlName="password"
-      />
+      /> -->
       <button
         [ngClass]="[
           'h-10 w-72 rounded-full bg-primary-500 text-white transition-colors duration-100',
@@ -28,7 +28,7 @@
           'hover:bg-primary-600',
         ]"
         type="submit"
-        [disabled]="loginForm.invalid || isSubmitting"
+        [disabled]="!loginForm.invalid || isSubmitting"
       >
         @if (isSubmitting) {
           <app-spinner />
@@ -45,4 +45,4 @@
     </ul>
     <a class="italic" href="#">Olvidé mi clave</a>
   </div>
-</main>
+</section>

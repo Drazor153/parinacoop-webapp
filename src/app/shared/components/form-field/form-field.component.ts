@@ -1,56 +1,41 @@
 import { Component, Input } from '@angular/core';
-import {
-  ControlValueAccessor,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { formatRut, RutFormat } from '@fdograph/rut-utilities';
 
 type FormatTypes = 'run' | 'noFormat';
 
 @Component({
-  selector: 'app-form-field',
+  selector: 'par-form-field',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule],
   templateUrl: './form-field.component.html',
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: FormFieldComponent,
-      multi: true,
-    },
-  ],
 })
-export class FormFieldComponent implements ControlValueAccessor {
+export class FormFieldComponent {
   @Input() label: string = '';
   @Input() type: string = 'text';
   @Input() placeholder: string = '';
-  @Input({ required: false }) format: FormatTypes = 'noFormat';
-  value: string = '';
+  @Input() format: FormatTypes = 'noFormat';
+  @Input({ required: true }) formCtrl!: FormControl;
+  @Input() errors: { [key: string]: string } = {};
 
-  onChangeCva = (_value: any) => {};
-  onTouchedCva = () => {};
-  touched: boolean = false;
-  disabled: boolean = false;
-
-  valueChanged(value: string): void {
-    this.value = value;
-    this.onChangeCva(this.value);
+  changeValue(value: string): void {
+    this.formCtrl.setValue(value);
   }
 
   onFocus(): void {
-    if (this.value && this.format === 'run') {
-      this.value = this.value.replace(/[^0-9kK]/g, ''); // Quita el formato
-      this.valueChanged(this.value); // Actualiza el valor sin formato
+    const ctrlValue = this.formCtrl.value;
+    if (ctrlValue && this.format === 'run') {
+      this.changeValue(ctrlValue.replace(/[^0-9kK]/g, '')); // Quita el formato
     }
   }
 
   onBlur(): void {
-    if (this.value && this.format === 'run') {
-      this.value = formatRut(this.value, RutFormat.DOTS_DASH); // Aplica el formato
-      this.valueChanged(this.value); // Actualiza el valor formateado
+    const ctrlValue = this.formCtrl.value;
+    if (ctrlValue && this.format === 'run') {
+      this.changeValue(formatRut(ctrlValue, RutFormat.DOTS_DASH)); // Aplica el formato
     }
-    this.markAsTouched();
   }
 
   onKeyPress(event: KeyboardEvent): boolean {
@@ -68,26 +53,10 @@ export class FormFieldComponent implements ControlValueAccessor {
     return true;
   }
 
-  writeValue(value: string): void {
-    this.value = value;
-  }
-
-  registerOnChange(onChange: any): void {
-    this.onChangeCva = onChange;
-  }
-
-  registerOnTouched(onTouched: any): void {
-    this.onTouchedCva = onTouched;
-  }
-
-  markAsTouched() {
-    if (!this.touched) {
-      this.onTouchedCva();
-      this.touched = true;
+  get errorMsg(): string {
+    for (const errorKey in this.errors) {
+      if (this.formCtrl.hasError(errorKey)) return this.errors[errorKey];
     }
-  }
-
-  setDisabledState(disabled: boolean) {
-    this.disabled = disabled;
+    return '';
   }
 }

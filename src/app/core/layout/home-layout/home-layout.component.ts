@@ -12,11 +12,12 @@ import {
   RouterLinkActive,
   RouterOutlet,
 } from '@angular/router';
-import { filter, Subscription } from 'rxjs';
+import { filter, max, Subscription } from 'rxjs';
 
 import { AuthService } from '@app/core/auth/services/auth.service';
 import { SvgIconComponent } from '@app/shared/components';
 import { NgClass } from '@angular/common';
+import { ROUTE_TOKENS } from '@app/route-tokens';
 
 type NavItem = {
   label: string;
@@ -41,30 +42,27 @@ export default class HomeLayoutComponent implements AfterViewInit, OnDestroy {
   navItems: NavItem[] = [
     {
       label: 'Inicio',
-      link: '.',
+      link: ROUTE_TOKENS.CLIENT_HOME,
     },
     {
       label: 'Depósitos a Plazo',
-      link: './deposito-a-plazo',
+      link: ROUTE_TOKENS.DAP,
     },
     {
       label: 'Cuentas de Ahorro',
-      link: './cuentas-de-ahorro',
-      disabled: true,
+      link: 'cuentas-de-ahorro',
     },
     {
       label: 'Créditos de Consumo',
-      link: './creditos-de-consumo',
-      disabled: true,
+      link: 'creditos-de-consumo',
     },
     {
       label: 'Créditos Comerciales',
-      link: './creditos-comerciales',
-      disabled: true,
+      link: 'creditos-comerciales',
     },
     {
       label: 'Perfil',
-      link: './perfil',
+      link: ROUTE_TOKENS.PROFILE,
     },
   ];
   @ViewChild('linkBackdrop')
@@ -84,14 +82,15 @@ export default class HomeLayoutComponent implements AfterViewInit, OnDestroy {
       .subscribe((event) => this.locateLinkBackdrop(event.url));
   }
 
-  locateLinkBackdrop(urlEvent: string): void {
-    const url = urlEvent.replace('/home', '.');
-    const index = this.navItems.findIndex((item) => item.link === url);
+  locateLinkBackdrop(path: string): void {
+    // const url = path.replace(`/${ROUTE_TOKENS.CLIENT_PATH}`, '');
+
+    const index = this.navItems.findIndex((item) => path.includes(item.link));
 
     if (this.linkBackdrop) {
       this.linkBackdrop.nativeElement.style.setProperty(
         '--left',
-        `${index * 11}rem`,
+        `${Math.max(index, 0) * 11}rem`,
       );
     }
   }
@@ -102,6 +101,6 @@ export default class HomeLayoutComponent implements AfterViewInit, OnDestroy {
 
   logout(): void {
     this.authService.logout();
-    this.router.navigate(['/login']);
+    this.router.navigate([ROUTE_TOKENS.AUTH_PATH]);
   }
 }

@@ -1,21 +1,22 @@
 import { Route } from '@angular/router';
+import { ROUTE_TOKENS } from '@app/route-tokens';
 
 const routes: Route[] = [
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: ROUTE_TOKENS.LOGIN,
     pathMatch: 'full',
   },
   {
-    path: 'login',
+    path: ROUTE_TOKENS.LOGIN,
     loadComponent: () => import('./pages/login/login.component'),
   },
   {
-    path: 'register',
+    path: ROUTE_TOKENS.REGISTER,
     loadComponent: () => import('./pages/register/register.component'),
   },
   {
-    path: 'password-recovery',
+    path: ROUTE_TOKENS.PASSWORD_RECOVERY,
     loadComponent: () =>
       import('./pages/password-recovery/password-recovery.component'),
   },

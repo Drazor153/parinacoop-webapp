@@ -21,7 +21,7 @@ type PasswordForm = FormGroupTypeBuilder<{
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass, FormFieldComponent],
+  imports: [ReactiveFormsModule, NgClass],
   templateUrl: './register.component.html',
 })
 export default class RegisterComponent implements OnInit {

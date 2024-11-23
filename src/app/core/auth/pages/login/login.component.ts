@@ -16,6 +16,8 @@ import { SpinnerComponent } from '@app/shared/components';
 import { FormFieldComponent } from '@shared/components/form-field/form-field.component';
 
 import { LoginService } from './login.service';
+import { ROUTE_TOKENS } from '@app/route-tokens';
+import { runValidator } from '@shared/validators/runValidator';
 
 type LoginForm = FormGroupTypeBuilder<{
   run: string;
@@ -25,7 +27,7 @@ type LoginForm = FormGroupTypeBuilder<{
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass, FormFieldComponent, SpinnerComponent],
+  imports: [ReactiveFormsModule, NgClass, SpinnerComponent],
   templateUrl: './login.component.html',
 })
 export default class LoginComponent implements OnInit, OnDestroy {
@@ -51,26 +53,22 @@ export default class LoginComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    const credentials = {
-      run: +getRutDigits(this.loginForm.value.run!),
-      password: this.loginForm.value.password!,
-    };
-    this.loginErrorMsg = '';
-    this.isSubmitting = true;
-    this.loginSubscription = this.loginService.login(credentials).subscribe({
-      next: (response) => {
-        this.router.navigate(['/home']);
-      },
-      error: ({ error }) => {
-        this.loginErrorMsg = error.message;
-        this.isSubmitting = false;
-      },
-    });
+    this.router.navigate([ROUTE_TOKENS.CLIENT_PATH, ROUTE_TOKENS.CLIENT_HOME]);
+    // const credentials = {
+    //   run: +getRutDigits(this.loginForm.value.run!),
+    //   password: this.loginForm.value.password!,
+    // };
+    // this.loginErrorMsg = '';
+    // this.isSubmitting = true;
+    // this.loginSubscription = this.loginService.login(credentials).subscribe({
+    //   next: (response) => {
+    //     this.router.navigate(['/home']);
+    //   },
+    //   error: ({ error }) => {
+    //     this.loginErrorMsg = error.message;
+    //     this.isSubmitting = false;
+    //   },
+    // });
   }
 }
 
-export const runValidator: ValidatorFn = (control: AbstractControl) => {
-  const value = control.value;
-
-  return validateRut(value) ? null : { incorrectFormat: true };
-};

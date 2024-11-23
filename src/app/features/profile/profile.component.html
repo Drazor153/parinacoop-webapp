@@ -1,1 +1,74 @@
-<p>profile works!</p>
+<section class="flex flex-col items-center gap-5 pt-5">
+  <h1 class="text-2xl">Mi perfil</h1>
+  <form [formGroup]="profileForm" (submit)="updateProfile()">
+    <fieldset>
+      <legend>Datos personales</legend>
+      <par-form-field
+        [formCtrl]="fc('run')"
+        format="run"
+        label="RUN"
+        [errors]="{
+          required: 'Debe ingresar su RUN',
+          runValidator: 'RUN inválido',
+        }"
+      />
+      <par-form-field
+        [formCtrl]="fc('names')"
+        label="Nombres"
+        [errors]="{ required: 'Debe ingresar su nombre completo' }"
+      />
+      <par-form-field
+        [formCtrl]="fc('firstLastName')"
+        label="Primer apellido"
+        [errors]="{ required: 'Debe ingresar su primer apellido' }"
+      />
+      <par-form-field
+        [formCtrl]="fc('secondLastName')"
+        label="Segundo apellido"
+        [errors]="{ required: 'Debe ingresar su segundo apellido' }"
+      />
+    </fieldset>
+    <fieldset>
+      <legend>Información de contacto</legend>
+      <par-form-field
+        [formCtrl]="fc('email')"
+        label="Correo electrónico"
+        [errors]="{
+          required: 'Debe ingresar un correo',
+          email: 'Correo no válido',
+        }"
+      />
+      <par-form-field
+        [formCtrl]="fc('cellphone')"
+        label="Número telefónico"
+        [errors]="{ required: 'Debe ingresar un número' }"
+      />
+    </fieldset>
+    <fieldset>
+      <legend>Dirección particular</legend>
+
+      <par-form-field
+        [formCtrl]="fc('street')"
+        label="Calle"
+        [errors]="{ required: 'Debe ingresar una dirección' }"
+      />
+
+      <par-form-field [formCtrl]="fc('number')" label="Número" />
+      <par-form-field [formCtrl]="fc('detail')" label="Detalles" />
+      <mat-form-field hideRequiredMarker>
+        <mat-label>Región</mat-label>
+        <mat-select required formControlName="regionId">
+          @for (region of regions$ | async; track region) {
+            <mat-option [value]="region.id">{{ region.name }}</mat-option>
+          }
+        </mat-select>
+        @if (fc('regionId').hasError('required')) {
+          <mat-error>Debe elegir una región</mat-error>
+        }
+      </mat-form-field>
+    </fieldset>
+    <button mat-flat-button type="submit" [disabled]="fc('run').invalid">
+      Guardar cambios
+    </button>
+  </form>
+</section>
