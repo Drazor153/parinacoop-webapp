@@ -1,5 +1,4 @@
 import {
-  APP_INITIALIZER,
   ApplicationConfig,
   LOCALE_ID,
   provideZoneChangeDetection,
@@ -26,7 +25,6 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideClientHydration(),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
     {
       provide: LOCALE_ID,

@@ -5,16 +5,15 @@
     "packageManager": "pnpm",
     "analytics": false
   },
-  "schematics": {
-    "@schematics/angular:component": {
-      "style": "scss"
-    }
-  },
   "newProjectRoot": "projects",
   "projects": {
     "parinacoop-webapp": {
       "projectType": "application",
-      "schematics": {},
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -38,12 +37,7 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": [],
-            "server": "src/main.server.ts",
-            "prerender": true,
-            "ssr": {
-              "entry": "server.ts"
-            }
+            "scripts": []
           },
           "configurations": {
             "production": {
