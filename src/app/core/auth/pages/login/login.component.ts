@@ -17,6 +17,7 @@ import { FormFieldComponent } from '@shared/components/form-field/form-field.com
 
 import { LoginService } from './login.service';
 import { ROUTE_TOKENS } from '@app/route-tokens';
+import { runValidator } from '@shared/validators/runValidator';
 
 type LoginForm = FormGroupTypeBuilder<{
   run: string;
@@ -26,7 +27,7 @@ type LoginForm = FormGroupTypeBuilder<{
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass, FormFieldComponent, SpinnerComponent],
+  imports: [ReactiveFormsModule, NgClass, SpinnerComponent],
   templateUrl: './login.component.html',
 })
 export default class LoginComponent implements OnInit, OnDestroy {
@@ -71,8 +72,3 @@ export default class LoginComponent implements OnInit, OnDestroy {
   }
 }
 
-export const runValidator: ValidatorFn = (control: AbstractControl) => {
-  const value = control.value;
-
-  return validateRut(value) ? null : { incorrectFormat: true };
-};
