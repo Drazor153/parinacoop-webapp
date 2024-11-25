@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
+  FormControl,
   ReactiveFormsModule,
   ValidatorFn,
   Validators,
@@ -27,7 +28,7 @@ type LoginForm = FormGroupTypeBuilder<{
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass, SpinnerComponent],
+  imports: [ReactiveFormsModule, NgClass, SpinnerComponent, FormFieldComponent],
   templateUrl: './login.component.html',
 })
 export default class LoginComponent implements OnInit, OnDestroy {
@@ -54,12 +55,12 @@ export default class LoginComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     this.router.navigate([ROUTE_TOKENS.CLIENT_PATH, ROUTE_TOKENS.CLIENT_HOME]);
+    this.isSubmitting = true;
     // const credentials = {
     //   run: +getRutDigits(this.loginForm.value.run!),
     //   password: this.loginForm.value.password!,
     // };
     // this.loginErrorMsg = '';
-    // this.isSubmitting = true;
     // this.loginSubscription = this.loginService.login(credentials).subscribe({
     //   next: (response) => {
     //     this.router.navigate(['/home']);
@@ -69,6 +70,10 @@ export default class LoginComponent implements OnInit, OnDestroy {
     //     this.isSubmitting = false;
     //   },
     // });
+  }
+
+  fc(name: string): FormControl {
+    return this.loginForm.get(name) as FormControl;
   }
 }
 

@@ -1,7 +1,11 @@
 <section class="flex flex-col items-center gap-5 pt-5">
   <h1 class="text-2xl">Mi perfil</h1>
-  <form [formGroup]="profileForm" (submit)="updateProfile()">
-    <fieldset>
+  <form
+    [formGroup]="profileForm"
+    (submit)="updateProfile()"
+    class="flex flex-col gap-5"
+  >
+    <fieldset class="border p-4">
       <legend>Datos personales</legend>
       <par-form-field
         [formCtrl]="fc('run')"
@@ -28,7 +32,7 @@
         [errors]="{ required: 'Debe ingresar su segundo apellido' }"
       />
     </fieldset>
-    <fieldset>
+    <fieldset class="border p-4">
       <legend>Información de contacto</legend>
       <par-form-field
         [formCtrl]="fc('email')"
@@ -44,7 +48,7 @@
         [errors]="{ required: 'Debe ingresar un número' }"
       />
     </fieldset>
-    <fieldset>
+    <fieldset class="border p-4">
       <legend>Dirección particular</legend>
 
       <par-form-field
@@ -57,17 +61,17 @@
       <par-form-field [formCtrl]="fc('detail')" label="Detalles" />
       <mat-form-field hideRequiredMarker>
         <mat-label>Región</mat-label>
-        <mat-select required formControlName="regionId">
+        <mat-select required formControlName="region">
           @for (region of regions$ | async; track region) {
-            <mat-option [value]="region.id">{{ region.name }}</mat-option>
+            <mat-option [value]="region">{{ region.name }}</mat-option>
           }
         </mat-select>
-        @if (fc('regionId').hasError('required')) {
+        @if (fc('region').hasError('required')) {
           <mat-error>Debe elegir una región</mat-error>
         }
       </mat-form-field>
     </fieldset>
-    <button mat-flat-button type="submit" [disabled]="fc('run').invalid">
+    <button mat-flat-button type="submit" [disabled]="profileForm.invalid">
       Guardar cambios
     </button>
   </form>

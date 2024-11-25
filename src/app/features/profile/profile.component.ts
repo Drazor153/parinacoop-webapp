@@ -13,17 +13,25 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormFieldComponent } from '@app/shared/components';
 import { runValidator } from '@shared/validators/runValidator';
 import { AsyncPipe } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { Region } from './models/Region';
 import { ProfileService } from './profile.service';
+import { FormGroupTypeBuilder } from '@app/shared/types';
+import { Commune } from '@app/shared/models/commune.model';
 
-// type ProfileForm = FormGroupTypeBuilder<{
-//   names: string;
-//   contact: {
-//     email: string,
-//     cellphone: string
-//   }
-// }>;
+type ProfileForm = FormGroupTypeBuilder<{
+  run: string;
+  names: string;
+  firstLastName: string;
+  secondLastName: string;
+  email: string;
+  cellphone: string;
+  street: string;
+  number: string;
+  detail: string;
+  region: Region;
+  commune: Commune;
+}>;
 
 @Component({
   selector: 'app-profile',
@@ -40,8 +48,9 @@ import { ProfileService } from './profile.service';
   templateUrl: './profile.component.html',
 })
 export default class ProfileComponent implements OnInit, OnDestroy {
-  profileForm!: FormGroup;
+  profileForm!: ProfileForm;
   regions$!: Observable<Region[]>;
+  loading = false;
   constructor(
     private fb: FormBuilder,
     private profileService: ProfileService,
@@ -54,17 +63,28 @@ export default class ProfileComponent implements OnInit, OnDestroy {
       firstLastName: ['', Validators.required],
       secondLastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      documentNumber: ['', Validators.required],
+      // documentNumber: ['', Validators.required],
       cellphone: ['', Validators.required],
       // typeAddress: ['', Validators.required],
       street: ['', Validators.required],
       number: ['', Validators.required],
       detail: [''],
-      regionId: ['', Validators.required],
-      communeId: ['', Validators.required],
+      region: [{} as Region, Validators.required],
+      commune: [{} as Commune, Validators.required],
     });
+    this.loading = true;
 
     this.regions$ = this.profileService.getRegions();
+
+    this.profileService
+      .getUser()
+      .pipe(take(1))
+      .subscribe({
+        next: (profile) => {
+          this.profileForm.patchValue(profile);
+        },
+      });
+    this.loading = false;
   }
 
   ngOnDestroy(): void {}
@@ -75,9 +95,5 @@ export default class ProfileComponent implements OnInit, OnDestroy {
 
   fc(name: string): FormControl {
     return this.profileForm.get(name) as FormControl;
-  }
-
-  displayFn(region: Region): string {
-    return region && region.name ? region.name : '';
   }
 }
