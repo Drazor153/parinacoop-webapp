@@ -1,11 +1,5 @@
-import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
-import {
-  CurrencyPipe,
-  DatePipe,
-  isPlatformBrowser,
-  NgClass,
-  PercentPipe,
-} from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { CurrencyPipe, DatePipe, NgClass, PercentPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { take } from 'rxjs';
 
@@ -43,13 +37,13 @@ export default class DapDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-      this.dapId = +this.route.snapshot.paramMap.get('id')!;
-      this.dapService
-        .getDapById(this.dapId)
-        .pipe(take(1))
-        .subscribe((data) => {
-          this.setCurrentDap(data);
-        });
+    this.dapId = +this.route.snapshot.paramMap.get('id')!;
+    this.dapService
+      .getDapById(this.dapId)
+      .pipe(take(1))
+      .subscribe((data) => {
+        this.setCurrentDap(data);
+      });
   }
 
   setCurrentDap(dap: Dap | undefined): void {

@@ -12,9 +12,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { FormFieldComponent } from '@app/shared/components';
 import { runValidator } from '@shared/validators/runValidator';
-import { AsyncPipe, NgIf } from '@angular/common';
-import { Observable, of } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
+import { Observable } from 'rxjs';
 import { Region } from './models/Region';
+import { ProfileService } from './profile.service';
 
 // type ProfileForm = FormGroupTypeBuilder<{
 //   names: string;
@@ -41,7 +42,10 @@ import { Region } from './models/Region';
 export default class ProfileComponent implements OnInit, OnDestroy {
   profileForm!: FormGroup;
   regions$!: Observable<Region[]>;
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private profileService: ProfileService,
+  ) {}
 
   ngOnInit(): void {
     this.profileForm = this.fb.group({
@@ -59,10 +63,8 @@ export default class ProfileComponent implements OnInit, OnDestroy {
       regionId: ['', Validators.required],
       communeId: ['', Validators.required],
     });
-    this.regions$ = of([
-      { id: 1, name: 'Arica' },
-      { id: 2, name: 'Iquique' },
-    ]);
+
+    this.regions$ = this.profileService.getRegions();
   }
 
   ngOnDestroy(): void {}
