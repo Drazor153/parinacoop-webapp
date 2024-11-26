@@ -1,11 +1,53 @@
-<section class="flex flex-col items-center gap-5 pt-5">
+<section
+  class="flex flex-col items-center gap-5 place-self-center py-5"
+>
+  <!-- max-w-[42rem] -->
   <h1 class="text-2xl">Mi perfil</h1>
   <form
     [formGroup]="profileForm"
-    (submit)="updateProfile()"
-    class="flex flex-col gap-5"
+    (submit)="onSubmit()"
+    class="flex flex-col items-center gap-5"
   >
-    <fieldset class="border p-4">
+    <div class="flex gap-2">
+      @if (isEditing) {
+        <button
+          [ngClass]="[
+            'bg-secondary-500 border-secondary-500 flex items-center rounded-full border px-4 py-2 text-white transition-colors duration-150',
+            'hover:bg-secondary-600 hover:border-secondary-600',
+          ]"
+          type="button"
+          (click)="toggleEdit()"
+        >
+          Cancelar
+          <!-- <mat-icon fontIcon="edit" class="text-base" /> -->
+        </button>
+        <button
+          [ngClass]="[
+            'flex items-center rounded-full border border-primary-500 bg-primary-500 px-4 py-2 text-white transition-colors duration-150',
+            'hover:border-primary-600 hover:bg-primary-600',
+            'disabled:border-primary-100 disabled:bg-primary-100 disabled:text-primary-400',
+          ]"
+          type="submit"
+          [disabled]="profileForm.invalid"
+        >
+          Guardar cambios
+          <mat-icon fontIcon="save" class="text-base" />
+        </button>
+      } @else {
+        <button
+          [ngClass]="[
+            'flex items-center rounded-full border border-primary-600 px-4 py-2 text-primary-600 transition-colors duration-150',
+            'hover:border-primary-700 hover:text-primary-700',
+          ]"
+          type="button"
+          (click)="toggleEdit()"
+        >
+          Modificar perfil
+          <mat-icon fontIcon="edit" class="text-base" />
+        </button>
+      }
+    </div>
+    <fieldset class="border p-4 rounded-lg grid grid-cols-2 gap-2">
       <legend>Datos personales</legend>
       <par-form-field
         [formCtrl]="fc('run')"
@@ -16,6 +58,13 @@
           runValidator: 'RUN inválido',
         }"
       />
+      <par-form-field
+      [formCtrl]="fc('documentNumber')"
+      label="Número de documento"
+      [errors]="{
+        required: 'Debe ingresar su número de documento',
+      }"
+    />
       <par-form-field
         [formCtrl]="fc('names')"
         label="Nombres"
@@ -32,7 +81,7 @@
         [errors]="{ required: 'Debe ingresar su segundo apellido' }"
       />
     </fieldset>
-    <fieldset class="border p-4">
+    <fieldset class="border p-4 rounded-lg grid grid-cols-2 gap-2">
       <legend>Información de contacto</legend>
       <par-form-field
         [formCtrl]="fc('email')"
@@ -48,7 +97,7 @@
         [errors]="{ required: 'Debe ingresar un número' }"
       />
     </fieldset>
-    <fieldset class="border p-4">
+    <fieldset class="border p-4 rounded-lg grid grid-cols-3 gap-2">
       <legend>Dirección particular</legend>
 
       <par-form-field
@@ -61,18 +110,28 @@
       <par-form-field [formCtrl]="fc('detail')" label="Detalles" />
       <mat-form-field hideRequiredMarker>
         <mat-label>Región</mat-label>
-        <mat-select required formControlName="region">
+        <mat-select required formControlName="regionId">
+          <mat-option [value]="0">Seleccione una región</mat-option>
           @for (region of regions$ | async; track region) {
-            <mat-option [value]="region">{{ region.name }}</mat-option>
+            <mat-option [value]="region.id">{{ region.name }}</mat-option>
           }
         </mat-select>
-        @if (fc('region').hasError('required')) {
+        @if (fc('regionId').hasError('min')) {
+          <mat-error>Debe elegir una región</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field hideRequiredMarker>
+        <mat-label>Comuna</mat-label>
+        <mat-select required formControlName="communeId">
+          <mat-option [value]="0">Seleccione una comuna</mat-option>
+          @for (region of regions$ | async; track region) {
+            <mat-option [value]="region.id">{{ region.name }}</mat-option>
+          }
+        </mat-select>
+        @if (fc('communeId').hasError('min')) {
           <mat-error>Debe elegir una región</mat-error>
         }
       </mat-form-field>
     </fieldset>
-    <button mat-flat-button type="submit" [disabled]="profileForm.invalid">
-      Guardar cambios
-    </button>
   </form>
 </section>

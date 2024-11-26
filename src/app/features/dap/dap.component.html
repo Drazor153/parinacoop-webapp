@@ -41,29 +41,29 @@
           ]"
         >
           <div>
-            <span class="font-bold">Depósito a Plazo</span>
+            <span class="font-medium">Depósito a Plazo</span>
             <span>N° {{ dap.id }} </span>
           </div>
           <div>
-            <span class="font-bold">Tipo de depósito</span
+            <span class="font-medium">Tipo de depósito</span
             ><span>
               {{ dap.type }}
             </span>
           </div>
           <div>
-            <span class="font-bold">Vencimiento</span>
+            <span class="font-medium">Vencimiento</span>
             <span>
               {{ dap.due_date | date: 'dd-MM-yyyy' }}
             </span>
           </div>
           <div>
-            <span class="font-bold">Monto a recibir</span>
+            <span class="font-medium">Monto a recibir</span>
             <span>
               {{ dap.final_amount | currency: 'CLP' : 'symbol' }}
             </span>
           </div>
           <div>
-            <span class="font-bold">Estado depósito</span>
+            <span class="font-medium">Estado depósito</span>
             <span>
               {{ dap.status | dapStatus }}
             </span>

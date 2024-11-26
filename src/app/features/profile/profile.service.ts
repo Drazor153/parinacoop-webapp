@@ -8,11 +8,15 @@ import { Profile } from '@app/shared/models/profile.model';
   providedIn: 'root',
 })
 export class ProfileService {
+  private userProfileSubject = new BehaviorSubject<Profile | null>(null);
+  public userProfile$ = this.userProfileSubject.asObservable();
+
   constructor() {}
 
-  getUser(): Observable<Profile> {
-    return of({
+  getCurrentProfile(): void {
+    of({
       run: '12.312.312-3',
+      documentNumber: '321.321.321',
       names: 'A',
       firstLastName: 'A',
       secondLastName: 'A',
@@ -23,7 +27,21 @@ export class ProfileService {
       detail: 'al lado',
       regionId: 1,
       communeId: 1,
-    }).pipe(delay(1000));
+    })
+      .pipe(delay(1000))
+      .subscribe({
+        next: (profileData) => this.userProfileSubject.next(profileData),
+      });
+  }
+
+  resetProfile(): void {
+    this.userProfileSubject.next(this.userProfileSubject.value);
+  }
+
+  updateProfile(data: Profile): void {
+    console.log(`Datos cambiados: ${data}`);
+
+    this.userProfileSubject.next(data);
   }
 
   getRegions(): Observable<Region[]> {

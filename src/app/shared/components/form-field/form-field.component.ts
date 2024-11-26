@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,7 +10,7 @@ type FormatTypes = 'run' | 'noFormat';
 @Component({
   selector: 'par-form-field',
   standalone: true,
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, NgClass],
   templateUrl: './form-field.component.html',
 })
 export class FormFieldComponent {
@@ -19,6 +20,7 @@ export class FormFieldComponent {
   @Input() format: FormatTypes = 'noFormat';
   @Input({ required: true }) formCtrl!: FormControl;
   @Input() errors: { [key: string]: string } = {};
+  @Input() size: 'small' | 'medium' | 'large' = 'medium';
 
   changeValue(value: string): void {
     this.formCtrl.setValue(value);
