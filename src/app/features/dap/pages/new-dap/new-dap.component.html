@@ -1,1 +1,26 @@
-<p>new-dap works!</p>
+<section>
+  <h1>Nuevo depósito a plazo</h1>
+  <form [formGroup]="newDapForm">
+    <mat-form-field>
+      <mat-label>Tipo de inversión</mat-label>
+      <mat-select formControlName="type">
+        <mat-option value="">Seleccione el tipo de depósito</mat-option>
+        <mat-option value="fijo">Depósito a plazo fijo</mat-option>
+        <mat-option value="renovable">Depósito a plazo renovable</mat-option>
+      </mat-select>
+      @if (fc('type').hasError('required')) {
+        <mat-error>Debe elegir un tipo de depósito</mat-error>
+      }
+    </mat-form-field>
+    <par-form-field
+      [formCtrl]="fc('initial_amount')"
+      type="number"
+      label="Monto a invertir"
+      [errors]="{
+        required: 'El monto no puede estar vacío',
+        min: 'El monto mínimo es de 50000',
+      }"
+    />
+    
+  </form>
+</section>

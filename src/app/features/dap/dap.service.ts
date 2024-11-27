@@ -20,12 +20,6 @@ export class DapService {
 
   getDapById(id: number): Observable<Dap | undefined> {
     return of(dapsMock.find((dap) => dap.id === id));
-    // return new Observable((observer) => {
-    //   setTimeout(() => {
-    //     observer.next(dapsMock.find((dap) => dap.id === id));
-    //     observer.complete();
-    //   }, 1000);
-    // });
   }
 
   getTotals(dapList: Dap[]): { totalProfit: number; totalActiveDaps: number } {
