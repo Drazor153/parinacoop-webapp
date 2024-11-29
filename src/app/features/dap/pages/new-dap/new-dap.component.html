@@ -1,6 +1,6 @@
 <section>
   <h1>Nuevo depósito a plazo</h1>
-  <form [formGroup]="newDapForm">
+  <form [formGroup]="newDapForm" (submit)="handleSubmit()">
     <mat-form-field>
       <mat-label>Tipo de inversión</mat-label>
       <mat-select formControlName="type">
@@ -13,7 +13,7 @@
       }
     </mat-form-field>
     <par-form-field
-      [formCtrl]="fc('initial_amount')"
+      [formCtrl]="fc('initialAmount')"
       type="number"
       label="Monto a invertir"
       [errors]="{
@@ -21,6 +21,92 @@
         min: 'El monto mínimo es de 50000',
       }"
     />
-    
+    <button
+      (click)="getTermOptions()"
+      type="button"
+      [disabled]="fc('type').errors || fc('initialAmount').errors"
+    >
+      Simular
+    </button>
+    <h2>Opciones para Depósitos a Plazo</h2>
+    <section class="flex max-w-screen-xl flex-wrap gap-5">
+      @for (termopt of termOptions; track termopt) {
+        <div
+          [ngClass]="[
+            'flex w-80 select-none flex-col items-center rounded-2xl border-2 p-5 transition-transform duration-150',
+            selectedTermOption?.days === termopt.days
+              ? 'border-primary-500'
+              : 'cursor-pointer border-[#8693A2] hover:scale-105',
+          ]"
+          (click)="
+            selectedTermOption?.days === termopt.days
+              ? undefined
+              : selectTermOption(termopt)
+          "
+        >
+          <h4 class="text-lg">{{ termopt.days }} días</h4>
+          <span class="text-body">
+            {{ termopt.dueDate | date: 'dd-MM-yyyy' }}
+          </span>
+          <div class="inline-grid grid-cols-2">
+            <span class="text-left">Tasa de interés</span>
+            <span class="text-right">
+              {{ termopt.interestRate | percent: '1.2-4' }}
+            </span>
+            <span class="text-left">Ganancia</span>
+            <span class="text-right">
+              {{ termopt.profit | currency: 'CLP' : 'symbol' }}
+            </span>
+            <span class="text-left"> Monto a recibir </span>
+            <span class="text-right">
+              {{ termopt.finalAmount | currency: 'CLP' : 'symbol' }}
+            </span>
+          </div>
+          @if (selectedTermOption?.days === termopt.days) {
+            <button
+              class="mt-10 w-32 rounded-xl bg-primary-100 py-1 text-primary-400"
+              disabled
+              type="button"
+            >
+              Seleccionado
+            </button>
+          } @else {
+            <button
+              [ngClass]="[
+                'mt-10 w-32 rounded-full bg-primary-500 py-1 text-white',
+                'hover:bg-primary-600',
+                'active:bg-primary-700',
+              ]"
+              type="button"
+            >
+              Seleccionar
+            </button>
+          }
+        </div>
+      }
+    </section>
+    <p class="text-[#8693A2]">
+      Para que su depósito a plazo se haga efectivo deberá realizar un pago por
+      transferencia por medio de Servipag a Cooperativa Parinacoop durante las
+      próximas 8 horas desde la realización del depósito a plazo
+    </p>
+    <p>
+      <mat-checkbox formControlName="accept">
+        Acepto las condiciones que conllevan a la operación exitosa del depósito
+        a plazo planificado en esta sección
+      </mat-checkbox>
+    </p>
+    <button
+      [ngClass]="[
+        'h-10 w-72 rounded-full bg-primary-500 text-white transition-colors duration-100',
+        'disabled:bg-primary-100 disabled:text-primary-400',
+        'hover:bg-primary-600',
+        'active:bg-primary-700',
+      ]"
+      [disabled]="newDapForm.invalid"
+      type="submit"
+    >
+      Realizar depósito a plazo
+    </button>
   </form>
 </section>
