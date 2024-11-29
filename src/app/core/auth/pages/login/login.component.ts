@@ -54,26 +54,30 @@ export default class LoginComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    this.router.navigate([ROUTE_TOKENS.CLIENT_PATH, ROUTE_TOKENS.CLIENT_HOME]);
+    // this.router.navigate([ROUTE_TOKENS.CLIENT_PATH, ROUTE_TOKENS.CLIENT_HOME]);
     this.isSubmitting = true;
-    // const credentials = {
-    //   run: +getRutDigits(this.loginForm.value.run!),
-    //   password: this.loginForm.value.password!,
-    // };
-    // this.loginErrorMsg = '';
-    // this.loginSubscription = this.loginService.login(credentials).subscribe({
-    //   next: (response) => {
-    //     this.router.navigate(['/home']);
-    //   },
-    //   error: ({ error }) => {
-    //     this.loginErrorMsg = error.message;
-    //     this.isSubmitting = false;
-    //   },
-    // });
+    const credentials = {
+      run: +getRutDigits(this.loginForm.value.run!),
+      password: this.loginForm.value.password!,
+    };
+    this.loginErrorMsg = '';
+    this.loginService.login(credentials).subscribe({
+      next: (response) => {
+        console.log(response.accessToken);
+        this.isSubmitting = true;
+        this.router.navigate([
+          ROUTE_TOKENS.CLIENT_PATH,
+          ROUTE_TOKENS.CLIENT_HOME,
+        ]);
+      },
+      error: ({ error }) => {
+        this.loginErrorMsg = error.message;
+        this.isSubmitting = false;
+      },
+    });
   }
 
   fc(name: string): FormControl {
     return this.loginForm.get(name) as FormControl;
   }
 }
-

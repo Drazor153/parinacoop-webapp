@@ -1,16 +1,21 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/auth/guards/auth.guard';
+import { inject } from '@angular/core';
+
 import { ROUTE_TOKENS } from './route-tokens';
+import { AuthService } from './core/auth/services/auth.service';
 
 export const routes: Routes = [
   {
     path: ROUTE_TOKENS.AUTH_PATH,
+    canMatch: [() => !inject(AuthService).isAuthenticated()],
     loadComponent: () =>
       import('./core/layout/auth-layout/auth-layout.component'),
     loadChildren: () => import('./core/auth/auth.routes'),
   },
   {
     path: ROUTE_TOKENS.CLIENT_PATH,
+    canActivate: [() => inject(AuthService).isAuthenticated()],
+    canMatch: [() => inject(AuthService).isAuthenticated()],
     loadComponent: () =>
       import('./core/layout/home-layout/home-layout.component'),
     children: [
@@ -47,5 +52,9 @@ export const routes: Routes = [
           import('./features/credito-comercial/credito-comercial.component'),
       },
     ],
+  },
+  {
+    path: '**',
+    redirectTo: ROUTE_TOKENS.AUTH_PATH,
   },
 ];

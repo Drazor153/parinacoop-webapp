@@ -5,33 +5,23 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { NgClass } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
-import { FormFieldComponent } from '@app/shared/components';
-import { runValidator } from '@shared/validators/runValidator';
-import { AsyncPipe, NgClass } from '@angular/common';
-import { Observable, Subscription } from 'rxjs';
-import { Region } from './models/Region';
-import { ProfileService } from './profile.service';
-import { FormGroupTypeBuilder } from '@app/shared/types';
+import { Subscription } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
-import { Profile } from '@app/shared/models/profile.model';
 
-// type ProfileForm = FormGroupTypeBuilder<{
-//   run: string;
-//   names: string;
-//   firstLastName: string;
-//   secondLastName: string;
-//   email: string;
-//   cellphone: string;
-//   street: string;
-//   number: string;
-//   detail: string;
-//   regionId: number;
-//   communeId: number;
-// }>;
+import { Commune } from '@features/profile/models/Commune';
+import { Profile } from '@shared/models/profile.model';
+import { runValidator } from '@shared/validators/runValidator';
+import { FormFieldComponent } from '@shared/components';
+import { FormGroupTypeBuilder } from '@shared/types';
+
+import { ProfileService } from './services/profile.service';
+import { Region } from './models/Region';
+import { LocationService } from './services/location.service';
 
 type ProfileForm = FormGroupTypeBuilder<Profile>;
 
@@ -47,13 +37,13 @@ type ProfileForm = FormGroupTypeBuilder<Profile>;
     MatSelectModule,
     MatIconModule,
     NgClass,
-    AsyncPipe,
   ],
   templateUrl: './profile.component.html',
 })
 export default class ProfileComponent implements OnInit, OnDestroy {
   profileForm!: ProfileForm;
-  regions$!: Observable<Region[]>;
+  regions: Region[] = [];
+  communes: Commune[] = [];
   loading = false;
 
   userProfileSubscription: Subscription | undefined;
@@ -62,6 +52,7 @@ export default class ProfileComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private profileService: ProfileService,
+    private locationService: LocationService,
   ) {}
 
   ngOnInit(): void {
@@ -83,15 +74,15 @@ export default class ProfileComponent implements OnInit, OnDestroy {
     this.profileForm.disable();
     this.loading = true;
 
-    this.regions$ = this.profileService.getRegions();
+    this.getRegions();
     this.userProfileSubscription = this.profileService.userProfile$.subscribe({
       next: (data) => {
         if (data) {
           this.profileForm.patchValue(data);
+          this.loading = false;
         }
       },
     });
-    this.loading = false;
   }
 
   ngOnDestroy(): void {
@@ -108,9 +99,26 @@ export default class ProfileComponent implements OnInit, OnDestroy {
       this.profileForm.disable();
       this.profileService.resetProfile();
     } else {
+      this.getCommunes();
       this.profileForm.enable();
     }
     this.isEditing = !this.isEditing;
+  }
+
+  getRegions(): void {
+    this.locationService.getRegions().subscribe((data) => {
+      this.regions = data;
+    });
+  }
+
+  getCommunes(): void {
+    const regionIdCtrl = this.fc('regionId');
+    this.locationService
+      .getCommunesByRegionId(+regionIdCtrl.value)
+      .subscribe((data) => {
+        // this.fc('communeId').setValue(0);
+        this.communes = data;
+      });
   }
 
   fc(name: string): FormControl {

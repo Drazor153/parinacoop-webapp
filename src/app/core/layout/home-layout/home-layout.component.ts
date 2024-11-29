@@ -18,7 +18,7 @@ import { AuthService } from '@app/core/auth/services/auth.service';
 import { SvgIconComponent } from '@app/shared/components';
 import { NgClass } from '@angular/common';
 import { ROUTE_TOKENS } from '@app/route-tokens';
-import { ProfileService } from '@app/features/profile/profile.service';
+import { ProfileService } from '@app/features/profile/services/profile.service';
 
 type NavItem = {
   label: string;

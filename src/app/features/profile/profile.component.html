@@ -110,9 +110,9 @@
       <par-form-field [formCtrl]="fc('detail')" label="Detalles" />
       <mat-form-field hideRequiredMarker>
         <mat-label>Región</mat-label>
-        <mat-select required formControlName="regionId">
+        <mat-select required formControlName="regionId" (valueChange)="getCommunes()">
           <mat-option [value]="0">Seleccione una región</mat-option>
-          @for (region of regions$ | async; track region) {
+          @for (region of regions; track region.id) {
             <mat-option [value]="region.id">{{ region.name }}</mat-option>
           }
         </mat-select>
@@ -124,8 +124,8 @@
         <mat-label>Comuna</mat-label>
         <mat-select required formControlName="communeId">
           <mat-option [value]="0">Seleccione una comuna</mat-option>
-          @for (region of regions$ | async; track region) {
-            <mat-option [value]="region.id">{{ region.name }}</mat-option>
+          @for (commune of communes; track commune.id) {
+            <mat-option [value]="commune.id">{{ commune.name }}</mat-option>
           }
         </mat-select>
         @if (fc('communeId').hasError('min')) {
