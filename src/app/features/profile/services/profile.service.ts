@@ -1,38 +1,33 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, delay, map, Observable, of } from 'rxjs';
-import { Region } from '../models/Region';
-import { User } from '@app/shared/models/user.model';
-import { Profile } from '@app/shared/models/profile.model';
+import { BehaviorSubject, delay, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { Commune } from '@app/features/profile/models/Commune';
+import { ProfileResponse } from '../interfaces/profile.response';
+import { AuthService } from '@app/core/auth/services/auth.service';
+import { formatRut, RutFormat } from '@fdograph/rut-utilities';
+import { UpdateProfileDto } from '../interfaces/update-profiel.dto';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProfileService {
-  private userProfileSubject = new BehaviorSubject<Profile | null>(null);
+  private userProfileSubject = new BehaviorSubject<ProfileResponse | null>(
+    null,
+  );
   public userProfile$ = this.userProfileSubject.asObservable();
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(
+    private authService: AuthService,
+    private httpClient: HttpClient,
+  ) {}
 
   getCurrentProfile(): void {
-    of({
-      run: '12.312.312-3',
-      documentNumber: '321.321.321',
-      names: 'A',
-      firstLastName: 'A',
-      secondLastName: 'A',
-      email: 'a@a.com',
-      cellphone: '+5623',
-      street: 'lobos',
-      number: '123',
-      detail: 'al lado',
-      regionId: 1,
-      communeId: 1,
-    })
-      .pipe(delay(1000))
+    if (this.userProfileSubject.value) return;
+    this.httpClient
+      .get<{profile:ProfileResponse}>(`profile/${this.authService.run}`).pipe(delay(1000))
       .subscribe({
-        next: (profileData) => this.userProfileSubject.next(profileData),
+        next: (profileData) => {
+          this.userProfileSubject.next(profileData.profile);
+        },
       });
   }
 
@@ -40,9 +35,12 @@ export class ProfileService {
     this.userProfileSubject.next(this.userProfileSubject.value);
   }
 
-  updateProfile(data: Profile): void {
-    console.log(`Datos cambiados: ${data}`);
-
-    this.userProfileSubject.next(data);
+  updateProfile(data: UpdateProfileDto): void {
+    console.log(`Datos cambiados:`, data);
+    this.httpClient.post<{profile:ProfileResponse}>('profile', data).subscribe({
+      next: (newData) => {
+        this.userProfileSubject.next(newData.profile);
+      },
+    });
   }
 }

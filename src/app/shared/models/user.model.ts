@@ -1,4 +1,4 @@
 export class User {
   run!: number;
-  name!: string;
+  role!: string;
 }

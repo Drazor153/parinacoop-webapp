@@ -1,7 +1,13 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import {
   FormBuilder,
   FormControl,
+  FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -14,7 +20,6 @@ import { Subscription } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 
 import { Commune } from '@features/profile/models/Commune';
-import { Profile } from '@shared/models/profile.model';
 import { runValidator } from '@shared/validators/runValidator';
 import { FormFieldComponent } from '@shared/components';
 import { FormGroupTypeBuilder } from '@shared/types';
@@ -22,8 +27,13 @@ import { FormGroupTypeBuilder } from '@shared/types';
 import { ProfileService } from './services/profile.service';
 import { Region } from './models/Region';
 import { LocationService } from './services/location.service';
-
-type ProfileForm = FormGroupTypeBuilder<Profile>;
+import {
+  formatRut,
+  getRutDigits,
+  RutFormat,
+  calculateRutVerifier,
+} from '@fdograph/rut-utilities';
+import { UpdateProfileDto } from './interfaces/update-profiel.dto';
 
 @Component({
   selector: 'app-profile',
@@ -41,44 +51,52 @@ type ProfileForm = FormGroupTypeBuilder<Profile>;
   templateUrl: './profile.component.html',
 })
 export default class ProfileComponent implements OnInit, OnDestroy {
-  profileForm!: ProfileForm;
+  profileForm = new FormGroup({
+    run: new FormControl('', [Validators.required, runValidator]),
+    names: new FormControl('', Validators.required),
+    firstLastName: new FormControl('', Validators.required),
+    secondLastName: new FormControl('', Validators.required),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    documentNumber: new FormControl(0, Validators.required),
+    cellphone: new FormControl('', Validators.required),
+    street: new FormControl('', Validators.required),
+    number: new FormControl(0, Validators.required),
+    detail: new FormControl(''),
+    regionId: new FormControl(0, [Validators.min(1)]),
+    communeId: new FormControl(0, [Validators.min(1)]),
+  });
   regions: Region[] = [];
   communes: Commune[] = [];
   loading = false;
 
-  userProfileSubscription: Subscription | undefined;
+  userProfileSubscription?: Subscription;
   isEditing = false;
 
   constructor(
-    private fb: FormBuilder,
     private profileService: ProfileService,
     private locationService: LocationService,
   ) {}
 
   ngOnInit(): void {
-    this.profileForm = this.fb.group({
-      run: ['', [Validators.required, runValidator]],
-      names: ['', Validators.required],
-      firstLastName: ['', Validators.required],
-      secondLastName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      documentNumber: ['', Validators.required],
-      cellphone: ['', Validators.required],
-      // typeAddress: ['', Validators.required],
-      street: ['', Validators.required],
-      number: ['', Validators.required],
-      detail: [''],
-      regionId: [0, [Validators.min(1)]],
-      communeId: [0, [Validators.min(1)]],
-    });
     this.profileForm.disable();
     this.loading = true;
+    this.profileService.getCurrentProfile();
 
-    this.getRegions();
+    // this.getRegions();
     this.userProfileSubscription = this.profileService.userProfile$.subscribe({
       next: (data) => {
         if (data) {
-          this.profileForm.patchValue(data);
+          console.log(data.run);
+          this.regions = [{ id: data.region.id, name: data.region.name }];
+          this.communes = [{ id: data.commune.id, name: data.commune.name }];
+
+          const runDigits = `${data.run}${calculateRutVerifier(data.run.toString())}`;
+          this.profileForm.patchValue({
+            ...data,
+            run: formatRut(runDigits, RutFormat.DOTS_DASH),
+            regionId: data.region.id,
+            communeId: data.commune.id,
+          });
           this.loading = false;
         }
       },
@@ -90,8 +108,24 @@ export default class ProfileComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    this.profileService.updateProfile(this.profileForm.value as Profile);
-    this.toggleEdit();
+    if (this.profileForm.invalid) return;
+    const newData: UpdateProfileDto = {
+      run: +getRutDigits(this.fc('run').value),
+      documentNumber: this.fc('documentNumber').value,
+      names: this.fc('names').value,
+      firstLastName: this.fc('firstLastName').value,
+      secondLastName: this.fc('secondLastName').value,
+      email: this.fc('email').value,
+      cellphone: this.fc('cellphone').value,
+      street: this.fc('street').value,
+      number: this.fc('number').value,
+      detail: this.fc('detail').value,
+      regionId: this.profileForm.controls.regionId.value!,
+      communeId: this.profileForm.controls.communeId.value!,
+    };
+    this.profileService.updateProfile(newData);
+    this.isEditing = false;
+    this.profileForm.disable();
   }
 
   toggleEdit(): void {
@@ -99,7 +133,8 @@ export default class ProfileComponent implements OnInit, OnDestroy {
       this.profileForm.disable();
       this.profileService.resetProfile();
     } else {
-      this.getCommunes();
+      this.getRegions();
+      this.getCommunes(this.profileForm.controls.regionId.value!);
       this.profileForm.enable();
     }
     this.isEditing = !this.isEditing;
@@ -111,14 +146,14 @@ export default class ProfileComponent implements OnInit, OnDestroy {
     });
   }
 
-  getCommunes(): void {
-    const regionIdCtrl = this.fc('regionId');
-    this.locationService
-      .getCommunesByRegionId(+regionIdCtrl.value)
-      .subscribe((data) => {
-        // this.fc('communeId').setValue(0);
-        this.communes = data;
-      });
+  getCommunes(regionId: number): void {
+    console.log(regionId);
+
+    // const regionIdCtrl = this.profileForm.controls.regionId.value!;
+    this.locationService.getCommunesByRegionId(regionId).subscribe((data) => {
+      // this.fc('communeId').setValue(0);
+      this.communes = data;
+    });
   }
 
   fc(name: string): FormControl {

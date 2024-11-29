@@ -74,7 +74,7 @@ export default class HomeLayoutComponent implements AfterViewInit, OnDestroy {
   constructor(
     private readonly router: Router,
     private readonly authService: AuthService,
-    private readonly profileService: ProfileService
+    private readonly profileService: ProfileService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -83,7 +83,7 @@ export default class HomeLayoutComponent implements AfterViewInit, OnDestroy {
       .pipe(filter((event) => event instanceof NavigationStart))
       .subscribe((event) => this.locateLinkBackdrop(event.url));
 
-    this.profileService.getCurrentProfile()
+    // this.profileService.getCurrentProfile();
   }
 
   locateLinkBackdrop(path: string): void {

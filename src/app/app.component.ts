@@ -1,7 +1,11 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
 
 import { SpinnerLoaderComponent } from './shared/components/spinner-loader/spinner-loader.component';
+import { EventBusService } from './shared/services/event-bus/event-bus.service';
+import { Subscription } from 'rxjs';
+import { AuthService } from './core/auth/services/auth.service';
+import { ROUTE_TOKENS } from './route-tokens';
 
 @Component({
   selector: 'app-root',
@@ -9,8 +13,24 @@ import { SpinnerLoaderComponent } from './shared/components/spinner-loader/spinn
   imports: [RouterOutlet, SpinnerLoaderComponent],
   templateUrl: './app.component.html',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'parinacoop-webapp';
+  eventBusSub?: Subscription;
+  constructor(
+    private authService: AuthService,
+    private eventBusService: EventBusService,
+    private router: Router,
+  ) {}
 
-  constructor() {}
+  ngOnInit(): void {
+    this.eventBusSub = this.eventBusService.on('logout', () => {
+      this.logout();
+    });
+  }
+
+  logout(): void {
+    console.log('Sesion ha expirado');
+    this.authService.logout();
+    this.router.createUrlTree([ROUTE_TOKENS.AUTH_PATH]);
+  }
 }

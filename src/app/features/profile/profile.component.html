@@ -110,7 +110,7 @@
       <par-form-field [formCtrl]="fc('detail')" label="Detalles" />
       <mat-form-field hideRequiredMarker>
         <mat-label>Región</mat-label>
-        <mat-select required formControlName="regionId" (valueChange)="getCommunes()">
+        <mat-select required formControlName="regionId" (selectionChange)="getCommunes($event.value)">
           <mat-option [value]="0">Seleccione una región</mat-option>
           @for (region of regions; track region.id) {
             <mat-option [value]="region.id">{{ region.name }}</mat-option>

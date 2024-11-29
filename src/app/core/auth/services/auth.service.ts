@@ -1,25 +1,30 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { environment } from '@env/environment';
-import { LoginResponse } from '../pages/login/interfaces/login.response';
 import { User } from '../../../shared/models/user.model';
 import { JwtService } from './jwt.service';
 import { LoaderService } from '@app/shared/services';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
-
-  public currentUser = this.currentUserSubject.asObservable();
+  private currentUser: User | null = null;
   private accessToken: string = '';
 
-  constructor(private readonly jwtService: JwtService) {}
+  get run(): number {
+    return this.currentUser?.run || 0;
+  }
+
+  constructor(private readonly jwtService: JwtService) {
+    this.accessToken = localStorage.getItem('access_token') || '';
+    if (this.accessToken) {
+      this.currentUser = jwtDecode<User>(this.accessToken);
+    }
+  }
 
   saveAccessToken(token: string): void {
     this.accessToken = token;
+    this.currentUser = jwtDecode<User>(token);
     localStorage.setItem('access_token', token);
   }
 
@@ -33,5 +38,6 @@ export class AuthService {
 
   logout(): void {
     this.jwtService.destroyToken();
+    this.currentUser = null;
   }
 }
