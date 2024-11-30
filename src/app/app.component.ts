@@ -31,6 +31,6 @@ export class AppComponent implements OnInit {
   logout(): void {
     console.log('Sesion ha expirado');
     this.authService.logout();
-    this.router.createUrlTree([ROUTE_TOKENS.AUTH_PATH]);
+    this.router.navigate([ROUTE_TOKENS.AUTH_PATH, ROUTE_TOKENS.LOGIN]);
   }
 }

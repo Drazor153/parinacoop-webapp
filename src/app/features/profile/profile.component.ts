@@ -11,17 +11,17 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { NgClass } from '@angular/common';
+import { AsyncPipe, NgClass } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 
 import { Commune } from '@features/profile/models/Commune';
 import { runValidator } from '@shared/validators/runValidator';
-import { FormFieldComponent } from '@shared/components';
+import { FormFieldComponent, SpinnerComponent } from '@shared/components';
 import { FormGroupTypeBuilder } from '@shared/types';
 
 import { ProfileService } from './services/profile.service';
@@ -33,7 +33,7 @@ import {
   RutFormat,
   calculateRutVerifier,
 } from '@fdograph/rut-utilities';
-import { UpdateProfileDto } from './interfaces/update-profiel.dto';
+import { UpdateProfileDto } from './interfaces/update-profile.dto';
 
 @Component({
   selector: 'app-profile',
@@ -47,6 +47,8 @@ import { UpdateProfileDto } from './interfaces/update-profiel.dto';
     MatSelectModule,
     MatIconModule,
     NgClass,
+    AsyncPipe,
+    SpinnerComponent,
   ],
   templateUrl: './profile.component.html',
 })
@@ -65,12 +67,14 @@ export default class ProfileComponent implements OnInit, OnDestroy {
     regionId: new FormControl(0, [Validators.min(1)]),
     communeId: new FormControl(0, [Validators.min(1)]),
   });
-  regions: Region[] = [];
-  communes: Commune[] = [];
-  loading = false;
 
+  regions$?: Observable<Region[]>;
+  communes$?: Observable<Commune[]>;
   userProfileSubscription?: Subscription;
+
+  loading = false;
   isEditing = false;
+  isSubmitting = false;
 
   constructor(
     private profileService: ProfileService,
@@ -81,23 +85,21 @@ export default class ProfileComponent implements OnInit, OnDestroy {
     this.profileForm.disable();
     this.loading = true;
     this.profileService.getCurrentProfile();
+    this.regions$ = this.locationService.regions$;
+    this.communes$ = this.locationService.communes$;
 
-    // this.getRegions();
     this.userProfileSubscription = this.profileService.userProfile$.subscribe({
       next: (data) => {
         if (data) {
           console.log(data.run);
-          this.regions = [{ id: data.region.id, name: data.region.name }];
-          this.communes = [{ id: data.commune.id, name: data.commune.name }];
-
           const runDigits = `${data.run}${calculateRutVerifier(data.run.toString())}`;
           this.profileForm.patchValue({
             ...data,
             run: formatRut(runDigits, RutFormat.DOTS_DASH),
-            regionId: data.region.id,
-            communeId: data.commune.id,
           });
           this.loading = false;
+          this.getRegions();
+          this.getCommunes(data.regionId);
         }
       },
     });
@@ -109,6 +111,9 @@ export default class ProfileComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     if (this.profileForm.invalid) return;
+    this.isSubmitting = true;
+    this.profileForm.disable();
+
     const newData: UpdateProfileDto = {
       run: +getRutDigits(this.fc('run').value),
       documentNumber: this.fc('documentNumber').value,
@@ -120,12 +125,23 @@ export default class ProfileComponent implements OnInit, OnDestroy {
       street: this.fc('street').value,
       number: this.fc('number').value,
       detail: this.fc('detail').value,
-      regionId: this.profileForm.controls.regionId.value!,
-      communeId: this.profileForm.controls.communeId.value!,
+      regionId: this.fc('regionId').value,
+      communeId: this.fc('communeId').value,
     };
-    this.profileService.updateProfile(newData);
-    this.isEditing = false;
-    this.profileForm.disable();
+
+    this.profileService.updateProfile(newData).subscribe({
+      next: (response) => {
+        alert(response.msg);
+        this.isSubmitting = false;
+        this.isEditing = false;
+      },
+      error: (error) => {
+        alert('Error al actualizar el perfil');
+        console.error(error);
+        this.isSubmitting = false;
+        this.profileForm.enable();
+      },
+    });
   }
 
   toggleEdit(): void {
@@ -133,27 +149,18 @@ export default class ProfileComponent implements OnInit, OnDestroy {
       this.profileForm.disable();
       this.profileService.resetProfile();
     } else {
-      this.getRegions();
-      this.getCommunes(this.profileForm.controls.regionId.value!);
       this.profileForm.enable();
     }
     this.isEditing = !this.isEditing;
   }
 
   getRegions(): void {
-    this.locationService.getRegions().subscribe((data) => {
-      this.regions = data;
-    });
+    this.locationService.getRegions();
   }
 
   getCommunes(regionId: number): void {
     console.log(regionId);
-
-    // const regionIdCtrl = this.profileForm.controls.regionId.value!;
-    this.locationService.getCommunesByRegionId(regionId).subscribe((data) => {
-      // this.fc('communeId').setValue(0);
-      this.communes = data;
-    });
+    this.locationService.getCommunesByRegionId(regionId);
   }
 
   fc(name: string): FormControl {

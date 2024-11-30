@@ -1,6 +1,4 @@
-<section
-  class="flex flex-col items-center gap-5 place-self-center py-5"
->
+<section class="flex flex-col items-center gap-5 place-self-center py-5">
   <!-- max-w-[42rem] -->
   <h1 class="text-2xl">Mi perfil</h1>
   <form
@@ -12,31 +10,36 @@
       @if (isEditing) {
         <button
           [ngClass]="[
-            'bg-secondary-500 border-secondary-500 flex items-center rounded-full border px-4 py-2 text-white transition-colors duration-150',
-            'hover:bg-secondary-600 hover:border-secondary-600',
+            'flex items-center rounded-full border h-[3.25rem] border-secondary-500 bg-secondary-500 px-4 py-2 text-white transition-colors duration-150',
+            'hover:border-secondary-600 hover:bg-secondary-600',
+            'disabled:border-secondary-100 disabled:bg-secondary-100 disabled:text-secondary-400',
           ]"
           type="button"
           (click)="toggleEdit()"
+          [disabled]="isSubmitting"
         >
           Cancelar
-          <!-- <mat-icon fontIcon="edit" class="text-base" /> -->
         </button>
         <button
           [ngClass]="[
-            'flex items-center rounded-full border border-primary-500 bg-primary-500 px-4 py-2 text-white transition-colors duration-150',
+            'flex items-center justify-center rounded-full border h-[3.25rem] w-48 border-primary-500 bg-primary-500 px-4 py-2 text-white transition-colors duration-150',
             'hover:border-primary-600 hover:bg-primary-600',
             'disabled:border-primary-100 disabled:bg-primary-100 disabled:text-primary-400',
           ]"
           type="submit"
-          [disabled]="profileForm.invalid"
+          [disabled]="profileForm.invalid || isSubmitting"
         >
-          Guardar cambios
-          <mat-icon fontIcon="save" class="text-base" />
+          @if (isSubmitting) {
+            <app-spinner />
+          } @else {
+            Guardar cambios
+            <mat-icon fontIcon="save" class="text-base" />
+          }
         </button>
       } @else {
         <button
           [ngClass]="[
-            'flex items-center rounded-full border border-primary-600 px-4 py-2 text-primary-600 transition-colors duration-150',
+            'flex items-center rounded-full border h-[3.25rem] border-primary-600 px-4 py-2 text-primary-600 transition-colors duration-150',
             'hover:border-primary-700 hover:text-primary-700',
           ]"
           type="button"
@@ -47,7 +50,7 @@
         </button>
       }
     </div>
-    <fieldset class="border p-4 rounded-lg grid grid-cols-2 gap-2">
+    <fieldset class="grid grid-cols-2 gap-2 rounded-lg border p-4">
       <legend>Datos personales</legend>
       <par-form-field
         [formCtrl]="fc('run')"
@@ -59,12 +62,12 @@
         }"
       />
       <par-form-field
-      [formCtrl]="fc('documentNumber')"
-      label="Número de documento"
-      [errors]="{
-        required: 'Debe ingresar su número de documento',
-      }"
-    />
+        [formCtrl]="fc('documentNumber')"
+        label="Número de documento"
+        [errors]="{
+          required: 'Debe ingresar su número de documento',
+        }"
+      />
       <par-form-field
         [formCtrl]="fc('names')"
         label="Nombres"
@@ -81,7 +84,7 @@
         [errors]="{ required: 'Debe ingresar su segundo apellido' }"
       />
     </fieldset>
-    <fieldset class="border p-4 rounded-lg grid grid-cols-2 gap-2">
+    <fieldset class="grid grid-cols-2 gap-2 rounded-lg border p-4">
       <legend>Información de contacto</legend>
       <par-form-field
         [formCtrl]="fc('email')"
@@ -97,7 +100,7 @@
         [errors]="{ required: 'Debe ingresar un número' }"
       />
     </fieldset>
-    <fieldset class="border p-4 rounded-lg grid grid-cols-3 gap-2">
+    <fieldset class="grid grid-cols-3 gap-2 rounded-lg border p-4">
       <legend>Dirección particular</legend>
 
       <par-form-field
@@ -110,9 +113,13 @@
       <par-form-field [formCtrl]="fc('detail')" label="Detalles" />
       <mat-form-field hideRequiredMarker>
         <mat-label>Región</mat-label>
-        <mat-select required formControlName="regionId" (selectionChange)="getCommunes($event.value)">
+        <mat-select
+          required
+          formControlName="regionId"
+          (selectionChange)="getCommunes($event.value)"
+        >
           <mat-option [value]="0">Seleccione una región</mat-option>
-          @for (region of regions; track region.id) {
+          @for (region of regions$ | async; track region.id) {
             <mat-option [value]="region.id">{{ region.name }}</mat-option>
           }
         </mat-select>
@@ -124,7 +131,7 @@
         <mat-label>Comuna</mat-label>
         <mat-select required formControlName="communeId">
           <mat-option [value]="0">Seleccione una comuna</mat-option>
-          @for (commune of communes; track commune.id) {
+          @for (commune of communes$ | async; track commune.id) {
             <mat-option [value]="commune.id">{{ commune.name }}</mat-option>
           }
         </mat-select>

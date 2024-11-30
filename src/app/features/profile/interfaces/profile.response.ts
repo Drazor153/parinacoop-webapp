@@ -9,12 +9,6 @@ export interface ProfileResponse {
   street: string;
   number: number;
   detail: string;
-  region: {
-    id: number;
-    name: string;
-  };
-  commune: {
-    id: number;
-    name: string;
-  };
+  regionId: number;
+  communeId: number;
 }

@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, delay, of } from 'rxjs';
+import { BehaviorSubject, delay, Observable, of, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ProfileResponse } from '../interfaces/profile.response';
 import { AuthService } from '@app/core/auth/services/auth.service';
-import { formatRut, RutFormat } from '@fdograph/rut-utilities';
-import { UpdateProfileDto } from '../interfaces/update-profiel.dto';
+import { UpdateProfileDto } from '../interfaces/update-profile.dto';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +22,7 @@ export class ProfileService {
   getCurrentProfile(): void {
     if (this.userProfileSubject.value) return;
     this.httpClient
-      .get<{profile:ProfileResponse}>(`profile/${this.authService.run}`).pipe(delay(1000))
+      .get<{ profile: ProfileResponse }>(`profile/${this.authService.run}`)
       .subscribe({
         next: (profileData) => {
           this.userProfileSubject.next(profileData.profile);
@@ -35,12 +34,10 @@ export class ProfileService {
     this.userProfileSubject.next(this.userProfileSubject.value);
   }
 
-  updateProfile(data: UpdateProfileDto): void {
+  updateProfile(data: UpdateProfileDto): Observable<{ msg: string }> {
     console.log(`Datos cambiados:`, data);
-    this.httpClient.post<{profile:ProfileResponse}>('profile', data).subscribe({
-      next: (newData) => {
-        this.userProfileSubject.next(newData.profile);
-      },
-    });
+    return this.httpClient
+      .patch<{ msg: string }>(`profile/${data.run}`, data)
+      .pipe(tap({ next: () => this.userProfileSubject.next(data) }));
   }
 }
