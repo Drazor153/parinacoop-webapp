@@ -29,8 +29,9 @@ export class AppComponent implements OnInit {
   }
 
   logout(): void {
-    console.log('Sesion ha expirado');
+    console.log('Sesión ha expirado');
     this.authService.logout();
-    this.router.navigate([ROUTE_TOKENS.AUTH_PATH, ROUTE_TOKENS.LOGIN]);
+    window.location.reload()
+    // this.router.navigate([ROUTE_TOKENS.AUTH_PATH, ROUTE_TOKENS.LOGIN]);
   }
 }

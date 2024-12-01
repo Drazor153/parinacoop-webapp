@@ -1,7 +1,8 @@
 export interface TermOption {
   days: number;
   dueDate: Date;
-  interestRate: number;
+  interestRateInMonth: number;
+  interestRateInPeriod: number;
   profit: number;
   finalAmount: number;
 }

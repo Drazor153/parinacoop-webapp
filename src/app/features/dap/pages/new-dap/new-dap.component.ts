@@ -11,8 +11,18 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormFieldComponent } from '@app/shared/components';
 import { NewDapService } from './new-dap.service';
 import { TermOption } from './models/TermOption';
-import { CurrencyPipe, DatePipe, NgClass, PercentPipe } from '@angular/common';
+import {
+  AsyncPipe,
+  CurrencyPipe,
+  DatePipe,
+  NgClass,
+  PercentPipe,
+} from '@angular/common';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
+import { AuthService } from '@app/core/auth/services/auth.service';
+import { ROUTE_TOKENS } from '@app/route-tokens';
 
 @Component({
   selector: 'app-new-dap',
@@ -27,50 +37,76 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     DatePipe,
     PercentPipe,
     CurrencyPipe,
+    AsyncPipe,
     NgClass,
   ],
   templateUrl: './new-dap.component.html',
 })
 export default class NewDapComponent implements OnInit {
-  public newDapForm = new FormGroup({
+  public simulateFirstForm = new FormGroup({
     type: new FormControl('', [Validators.required]),
     initialAmount: new FormControl(0, [
       Validators.required,
       Validators.min(50000),
     ]),
+  });
+  public simulateSecondForm = new FormGroup({
     termOption: new FormControl<TermOption | null>(null, [Validators.required]),
     accept: new FormControl(false, [Validators.requiredTrue]),
   });
 
   get selectedTermOption(): TermOption | null {
-    return this.newDapForm.get('termOption')!.value;
+    return this.simulateSecondForm.controls.termOption.value;
   }
 
-  termOptions: TermOption[] = [];
+  termOptions$?: Observable<TermOption[]>;
   isLoadingTermOptions = false;
 
-  constructor(private newDapService: NewDapService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private newDapService: NewDapService,
+  ) {}
 
   ngOnInit(): void {
-    this.newDapService.getTermOptions('', 300000).subscribe((terms) => {
-      this.termOptions = terms;
-    });
+    this.termOptions$ = this.newDapService.termOptions$;
   }
 
   getTermOptions(): void {
-    const type = this.newDapForm.controls.type.value!;
-    const initialAmount = this.newDapForm.controls.initialAmount.value!;
+    const { type, initialAmount } = this.simulateFirstForm.value;
+    this.newDapService.getTermOptions(type!, +initialAmount!);
   }
 
   selectTermOption(val: TermOption): void {
-    this.newDapForm.patchValue({ termOption: val });
+    this.simulateSecondForm.controls.termOption.setValue(val);
   }
 
   handleSubmit(): void {
-    console.log(this.newDapForm.value);
+    const { initialAmount, type } = this.simulateFirstForm.value;
+
+    const days = +this.simulateSecondForm.value.termOption!.days;
+    this.newDapService
+      .createDap({
+        userRun: this.authService.run,
+        currencyType: 'CLP',
+        days,
+        initialAmount: +initialAmount!,
+        type: type!,
+      })
+      .subscribe({
+        next: (response) => {
+          alert('DAP creado correctamente');
+          console.log(response);
+          this.router.navigate([ROUTE_TOKENS.CLIENT_PATH, ROUTE_TOKENS.DAP]);
+        },
+        error: (error) => {
+          alert('Ha ocurrido un error');
+          console.error(error);
+        },
+      });
   }
 
-  fc(name: string): FormControl {
-    return this.newDapForm.get(name) as FormControl;
+  fs(name: string): FormControl {
+    return this.simulateFirstForm.get(name) as FormControl;
   }
 }

@@ -1,19 +1,19 @@
 <section>
   <h1>Nuevo depósito a plazo</h1>
-  <form [formGroup]="newDapForm" (submit)="handleSubmit()">
+  <form [formGroup]="simulateFirstForm" (submit)="getTermOptions()">
     <mat-form-field>
       <mat-label>Tipo de inversión</mat-label>
       <mat-select formControlName="type">
         <mat-option value="">Seleccione el tipo de depósito</mat-option>
-        <mat-option value="fijo">Depósito a plazo fijo</mat-option>
-        <mat-option value="renovable">Depósito a plazo renovable</mat-option>
+        <mat-option value="DPF">Depósito a plazo fijo</mat-option>
+        <mat-option value="DPR">Depósito a plazo renovable</mat-option>
       </mat-select>
-      @if (fc('type').hasError('required')) {
+      @if (fs('type').hasError('required')) {
         <mat-error>Debe elegir un tipo de depósito</mat-error>
       }
     </mat-form-field>
     <par-form-field
-      [formCtrl]="fc('initialAmount')"
+      [formCtrl]="fs('initialAmount')"
       type="number"
       label="Monto a invertir"
       [errors]="{
@@ -22,47 +22,52 @@
       }"
     />
     <button
-      (click)="getTermOptions()"
-      type="button"
-      [disabled]="fc('type').errors || fc('initialAmount').errors"
+      type="submit"
+      [disabled]="simulateFirstForm.invalid"
     >
       Simular
     </button>
+    </form>
+    <form [formGroup]="simulateSecondForm" (submit)="handleSubmit()">
     <h2>Opciones para Depósitos a Plazo</h2>
     <section class="flex max-w-screen-xl flex-wrap gap-5">
-      @for (termopt of termOptions; track termopt) {
+      @for (termOpt of termOptions$ | async; track termOpt.days) {
         <div
           [ngClass]="[
             'flex w-80 select-none flex-col items-center rounded-2xl border-2 p-5 transition-transform duration-150',
-            selectedTermOption?.days === termopt.days
+            selectedTermOption?.days === termOpt.days
               ? 'border-primary-500'
               : 'cursor-pointer border-[#8693A2] hover:scale-105',
           ]"
           (click)="
-            selectedTermOption?.days === termopt.days
+            selectedTermOption?.days === termOpt.days
               ? undefined
-              : selectTermOption(termopt)
+              : selectTermOption(termOpt)
           "
         >
-          <h4 class="text-lg">{{ termopt.days }} días</h4>
+          <h4 class="text-lg">{{ termOpt.days }} días</h4>
           <span class="text-body">
-            {{ termopt.dueDate | date: 'dd-MM-yyyy' }}
+            {{ termOpt.dueDate | date: 'dd-MM-yyyy' }}
           </span>
           <div class="inline-grid grid-cols-2">
-            <span class="text-left">Tasa de interés</span>
+            <span class="text-left">Tasa de interés del periodo</span>
             <span class="text-right">
-              {{ termopt.interestRate | percent: '1.2-4' }}
+              {{ termOpt.interestRateInPeriod | percent: '1.2-4' }}
+            </span>
+            <span class="text-left">Tasa de interés base (30 días)</span>
+            <span class="text-right">
+              {{ termOpt.interestRateInMonth | percent: '1.2-4' }}
             </span>
             <span class="text-left">Ganancia</span>
             <span class="text-right">
-              {{ termopt.profit | currency: 'CLP' : 'symbol' }}
+              {{ termOpt.profit | currency: 'CLP' : 'symbol' }}
             </span>
             <span class="text-left"> Monto a recibir </span>
             <span class="text-right">
-              {{ termopt.finalAmount | currency: 'CLP' : 'symbol' }}
+              {{ termOpt.finalAmount | currency: 'CLP' : 'symbol' }}
             </span>
           </div>
-          @if (selectedTermOption?.days === termopt.days) {
+          @if (selectedTermOption?.days === termOpt.days) {
             <button
               class="mt-10 w-32 rounded-xl bg-primary-100 py-1 text-primary-400"
               disabled
@@ -103,7 +108,7 @@
         'hover:bg-primary-600',
         'active:bg-primary-700',
       ]"
-      [disabled]="newDapForm.invalid"
+      [disabled]="simulateSecondForm.invalid"
       type="submit"
     >
       Realizar depósito a plazo

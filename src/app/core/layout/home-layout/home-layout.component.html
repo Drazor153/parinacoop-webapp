@@ -30,13 +30,13 @@
         <li>
           <a
             [ngClass]="[
-              'inline-block h-8 w-44 content-center rounded-b text-center transition-colors duration-200',
+              'inline-block h-8 w-44 select-none content-center rounded-b text-center transition-colors duration-200',
               'hover:text-primary-500',
               navItem.disabled
                 ? 'pointer-events-none cursor-default text-gray-400'
                 : '',
             ]"
-            [routerLink]="!navItem.disabled ? [navItem.link] : null"
+            [routerLink]="navItem.disabled ? null : [navItem.link]"
             routerLinkActive="text-primary-500"
             aria-current="page"
             >{{ navItem.label }}</a

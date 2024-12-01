@@ -1,21 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, delay, Observable, of } from 'rxjs';
 import { Dap } from './models/dap.model';
 import { dapsMock } from './mock/daps';
-import { DapStatusEnum } from './models/dap-status.enum';
+import { DapStatus } from './models/dap-status.enum';
 
 @Injectable({ providedIn: 'root' })
 export class DapService {
-  private userDaps: Dap[] | undefined;
-
+  private dapsSubject = new BehaviorSubject<Dap[]>([]);
+  public daps$ = this.dapsSubject.asObservable();
   constructor() {}
 
   getDapList(): Observable<Dap[]> {
-    if (this.userDaps) {
-      console.log('Returning cached daps');
-      return of(this.userDaps);
-    }
-    return of(dapsMock).pipe(tap((daps) => (this.userDaps = daps)));
+    return of(dapsMock).pipe(delay(1000));
   }
 
   getDapById(id: number): Observable<Dap | undefined> {
@@ -25,8 +21,8 @@ export class DapService {
   getTotals(dapList: Dap[]): { totalProfit: number; totalActiveDaps: number } {
     return dapList.reduce(
       (previous, current) => {
-        if (current.status !== DapStatusEnum.ACTIVE) return previous;
-        previous.totalActiveDaps += current.initial_amount;
+        if (current.status !== DapStatus.ACTIVE) return previous;
+        previous.totalActiveDaps += current.initialAmount;
         previous.totalProfit += current.profit;
         return previous;
       },

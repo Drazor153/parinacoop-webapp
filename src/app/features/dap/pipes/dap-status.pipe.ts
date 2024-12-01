@@ -1,8 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { DapStatusEnum } from '../models/dap-status.enum';
+import { DapStatus } from '../models/dap-status.enum';
 
 type DapStatusKeys = {
-  [key in DapStatusEnum]: string;
+  [key in DapStatus]: string;
 };
 
 @Pipe({
@@ -15,9 +15,10 @@ export class DapStatusPipe implements PipeTransform {
     'expired-pending': 'Vencido (transferencia pendiente)',
     expired: 'Vencido',
     paid: 'Pagado',
+    pending: 'Pendiente',
   };
 
-  transform(value: DapStatusEnum): string {
+  transform(value: DapStatus): string {
     return this.keys[value] ?? value;
   }
 }
