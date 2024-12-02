@@ -3,6 +3,7 @@ import { User } from '../../../shared/models/user.model';
 import { JwtService } from './jwt.service';
 import { LoaderService } from '@app/shared/services';
 import { jwtDecode } from 'jwt-decode';
+import { Role } from '@app/shared/enums/roles';
 
 @Injectable({
   providedIn: 'root',
@@ -34,6 +35,14 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return !!this.jwtService.getToken();
+  }
+
+  isAdmin(): boolean {
+    return this.currentUser?.role === Role.ADMIN;
+  }
+
+  isClient(): boolean {
+    return this.currentUser?.role === Role.CLIENT;
   }
 
   logout(): void {

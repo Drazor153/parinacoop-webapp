@@ -54,21 +54,20 @@ export default class LoginComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    // this.router.navigate([ROUTE_TOKENS.CLIENT_PATH, ROUTE_TOKENS.CLIENT_HOME]);
     this.isSubmitting = true;
     const credentials = {
       run: +getRutDigits(this.loginForm.value.run!),
       password: this.loginForm.value.password!,
     };
+
     this.loginErrorMsg = '';
     this.loginService.login(credentials).subscribe({
       next: (response) => {
         console.log(response.accessToken);
-        this.isSubmitting = true;
-        this.router.navigate([
-          ROUTE_TOKENS.CLIENT_PATH,
-          ROUTE_TOKENS.CLIENT_HOME,
-        ]);
+        this.isSubmitting = false;
+        response.isClient
+          ? this.router.navigate([ROUTE_TOKENS.CLIENT_PATH])
+          : this.router.navigate([ROUTE_TOKENS.ADMIN_PATH]);
       },
       error: ({ error }) => {
         this.loginErrorMsg = error.message;
