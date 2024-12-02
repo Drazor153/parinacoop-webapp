@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DapDetailComponent } from './dap-detail.component';
+import { DapDialogDetailsComponent } from './dap-dialog-details.component';
 
-describe('DapDetailComponent', () => {
-  let component: DapDetailComponent;
-  let fixture: ComponentFixture<DapDetailComponent>;
+describe('DapDetailsComponent', () => {
+  let component: DapDialogDetailsComponent;
+  let fixture: ComponentFixture<DapDialogDetailsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DapDetailComponent]
+      imports: [DapDialogDetailsComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DapDetailComponent);
+    fixture = TestBed.createComponent(DapDialogDetailsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

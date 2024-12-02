@@ -21,7 +21,6 @@ export class NewDapService {
 
     this.httpClient
       .post<{ sDaps: TermOption[] }>('dap/simulate', { type, initialAmount })
-      .pipe(delay(1000))
       .subscribe((res) => {
         this.termOptionsSubject.next(res.sDaps);
       });

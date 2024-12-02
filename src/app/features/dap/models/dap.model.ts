@@ -1,14 +1,18 @@
-import { DapStatus } from "./dap-status.enum";
+import { DapStatus } from './dap-status.enum';
+import { DapType } from './dap-type.enum';
 
 export class Dap {
   id!: number;
-  type!: string;
+  userRun!: number;
+  type!: DapType;
   currencyType!: string;
   status!: DapStatus;
   days!: number;
   initialDate!: Date;
   initialAmount!: number;
+  finalAmount!: number;
   dueDate!: Date;
   profit!: number;
-  interestRate!: number;
+  interestRateInMonth!: number;
+  interestRateInPeriod!: number;
 }

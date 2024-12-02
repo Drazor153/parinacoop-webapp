@@ -1,22 +1,33 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, delay, Observable, of } from 'rxjs';
 import { Dap } from './models/dap.model';
-import { dapsMock } from './mock/daps';
 import { DapStatus } from './models/dap-status.enum';
+import { HttpClient } from '@angular/common/http';
+import { AuthService } from '@app/core/auth/services/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class DapService {
-  private dapsSubject = new BehaviorSubject<Dap[]>([]);
+  private dapsSubject = new BehaviorSubject<Dap[] | null>(null);
   public daps$ = this.dapsSubject.asObservable();
-  constructor() {}
 
-  getDapList(): Observable<Dap[]> {
-    return of(dapsMock).pipe(delay(1000));
+  constructor(
+    private authService: AuthService,
+    private httpClient: HttpClient,
+  ) {}
+
+  getDapList(): void {
+    this.httpClient
+      .get<{ daps: Dap[] }>(`clients/${this.authService.run}/daps`)
+      .subscribe({
+        next: (response) => {
+          this.dapsSubject.next(response.daps);
+        },
+      });
   }
 
-  getDapById(id: number): Observable<Dap | undefined> {
-    return of(dapsMock.find((dap) => dap.id === id));
-  }
+  // getDapById(id: number): Observable<Dap | undefined> {
+  //   return of(dapsMock.find((dap) => dap.id === id));
+  // }
 
   getTotals(dapList: Dap[]): { totalProfit: number; totalActiveDaps: number } {
     return dapList.reduce(

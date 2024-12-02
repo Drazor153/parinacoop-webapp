@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -42,7 +42,7 @@ import { ROUTE_TOKENS } from '@app/route-tokens';
   ],
   templateUrl: './new-dap.component.html',
 })
-export default class NewDapComponent implements OnInit {
+export default class NewDapComponent implements OnInit, OnDestroy {
   public simulateFirstForm = new FormGroup({
     type: new FormControl('', [Validators.required]),
     initialAmount: new FormControl(0, [
@@ -70,6 +70,9 @@ export default class NewDapComponent implements OnInit {
 
   ngOnInit(): void {
     this.termOptions$ = this.newDapService.termOptions$;
+  }
+  ngOnDestroy(): void {
+      
   }
 
   getTermOptions(): void {

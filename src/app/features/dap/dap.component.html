@@ -1,3 +1,4 @@
+@let userDaps = userDaps$ | async;
 <section class="flex flex-col items-center gap-5 pt-5">
   <h1 class="text-2xl">Inversiones: Depósitos a Plazo</h1>
   <div class="grid w-full max-w-[40rem] grid-cols-2 gap-10">
@@ -32,49 +33,14 @@
     </a>
 
     <div class="flex w-full flex-col gap-5 text-center">
-      @for (dap of userDaps$ | async; track dap.id) {
-        <article
-          [ngClass]="[
-            'grid grid-cols-[repeat(5,minmax(0,1fr))_8.3%] place-items-center',
-            'rounded-lg border border-[#dcdcdc] bg-nav-color py-2 text-sm',
-            '[&>div]:flex [&>div]:flex-col',
-          ]"
-        >
-          <div>
-            <span class="font-medium">Depósito a Plazo</span>
-            <span>N° {{ dap.id }} </span>
-          </div>
-          <div>
-            <span class="font-medium">Tipo de depósito</span
-            ><span>
-              {{ dap.type }}
-            </span>
-          </div>
-          <div>
-            <span class="font-medium">Vencimiento</span>
-            <span>
-              {{ dap.dueDate | date: 'dd-MM-yyyy' }}
-            </span>
-          </div>
-          <div>
-            <span class="font-medium">Monto a recibir</span>
-            <span>
-              {{ dap.initialAmount + dap.profit| currency: 'CLP' : 'symbol' }}
-            </span>
-          </div>
-          <div>
-            <span class="font-medium">Estado depósito</span>
-            <span>
-              {{ dap.status | dapStatus }}
-            </span>
-          </div>
-          <a
-            class="content-center text-primary-600 hover:underline"
-            [routerLink]="[dap.id]"
-          >
-            Ver detalle
-          </a>
-        </article>
+      @if (userDaps) {
+        @for (dap of userDaps; track dap.id) {
+          <app-dap-item [dap]="dap"/>
+        } @empty {
+          <div>No tienes depósitos a plazo</div>
+        }
+      } @else {
+        <div>cargando</div>
       }
     </div>
   </section>
