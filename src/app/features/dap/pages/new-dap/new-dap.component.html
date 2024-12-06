@@ -1,7 +1,7 @@
-<section>
-  <h1>Nuevo depósito a plazo</h1>
-  <form [formGroup]="simulateFirstForm" (submit)="getTermOptions()">
-    <mat-form-field>
+<section class="flex flex-col items-center gap-5 p-5">
+  <h1 class="text-2xl">Nuevo depósito a plazo</h1>
+  <form class="flex gap-5" [formGroup]="simulateFirstForm" (submit)="getTermOptions()">
+    <mat-form-field [hideRequiredMarker]="true">
       <mat-label>Tipo de inversión</mat-label>
       <mat-select formControlName="type">
         <mat-option value="">Seleccione el tipo de depósito</mat-option>
@@ -21,97 +21,54 @@
         min: 'El monto mínimo es de 50000',
       }"
     />
-    <button
-      type="submit"
-      [disabled]="simulateFirstForm.invalid"
-    >
+    <button class="mt-[7px]" appButtonSolid type="submit" [disabled]="simulateFirstForm.invalid">
       Simular
     </button>
-    </form>
-    <form [formGroup]="simulateSecondForm" (submit)="handleSubmit()">
-    <h2>Opciones para Depósitos a Plazo</h2>
-    <section class="flex max-w-screen-xl flex-wrap gap-5">
-      @for (termOpt of termOptions$ | async; track termOpt.days) {
-        <div
-          [ngClass]="[
-            'flex w-80 select-none flex-col items-center rounded-2xl border-2 p-5 transition-transform duration-150',
-            selectedTermOption?.days === termOpt.days
-              ? 'border-primary-500'
-              : 'cursor-pointer border-[#8693A2] hover:scale-105',
-          ]"
-          (click)="
-            selectedTermOption?.days === termOpt.days
-              ? undefined
-              : selectTermOption(termOpt)
-          "
-        >
-          <h4 class="text-lg">{{ termOpt.days }} días</h4>
-          <span class="text-body">
-            {{ termOpt.dueDate | date: 'dd-MM-yyyy' }}
-          </span>
-          <div class="inline-grid grid-cols-2">
-            <span class="text-left">Tasa de interés del periodo</span>
-            <span class="text-right">
-              {{ termOpt.interestRateInPeriod | percent: '1.2-4' }}
-            </span>
-            <span class="text-left">Tasa de interés base (30 días)</span>
-            <span class="text-right">
-              {{ termOpt.interestRateInMonth | percent: '1.2-4' }}
-            </span>
-            <span class="text-left">Ganancia</span>
-            <span class="text-right">
-              {{ termOpt.profit | currency: 'CLP' : 'symbol' }}
-            </span>
-            <span class="text-left"> Monto a recibir </span>
-            <span class="text-right">
-              {{ termOpt.finalAmount | currency: 'CLP' : 'symbol' }}
-            </span>
-          </div>
-          @if (selectedTermOption?.days === termOpt.days) {
-            <button
-              class="mt-10 w-32 rounded-xl bg-primary-100 py-1 text-primary-400"
-              disabled
-              type="button"
-            >
-              Seleccionado
-            </button>
-          } @else {
-            <button
-              [ngClass]="[
-                'mt-10 w-32 rounded-full bg-primary-500 py-1 text-white',
-                'hover:bg-primary-600',
-                'active:bg-primary-700',
-              ]"
-              type="button"
-            >
-              Seleccionar
-            </button>
-          }
-        </div>
-      }
-    </section>
-    <p class="text-[#8693A2]">
-      Para que su depósito a plazo se haga efectivo deberá realizar un pago por
-      transferencia por medio de Servipag a Cooperativa Parinacoop durante las
-      próximas 8 horas desde la realización del depósito a plazo
-    </p>
-    <p>
-      <mat-checkbox formControlName="accept">
-        Acepto las condiciones que conllevan a la operación exitosa del depósito
-        a plazo planificado en esta sección
-      </mat-checkbox>
-    </p>
-    <button
-      [ngClass]="[
-        'h-10 w-72 rounded-full bg-primary-500 text-white transition-colors duration-100',
-        'disabled:bg-primary-100 disabled:text-primary-400',
-        'hover:bg-primary-600',
-        'active:bg-primary-700',
-      ]"
-      [disabled]="simulateSecondForm.invalid"
-      type="submit"
-    >
-      Realizar depósito a plazo
-    </button>
   </form>
+  <h2 class="text-2xl">Opciones para Depósitos a Plazo</h2>
+  @if (firstFormSubmitted) {
+    @let termOptionResolved = termOptions$ | async;
+    @if (termOptionResolved) {
+      <form
+        class="inline-flex w-[62.5rem] flex-col gap-5 items-center"
+        [formGroup]="simulateSecondForm"
+        (submit)="handleSubmit()"
+      >
+        <section class="flex max-w-screen-xl flex-wrap gap-5">
+          @for (termOpt of termOptionResolved; track termOpt.days) {
+            <app-term-option
+              [termOption]="termOpt"
+              [selected]="selectedTermOption?.days === termOpt.days"
+              (emitTermOption)="selectTermOption($event)"
+            />
+          }
+        </section>
+        <p class="text-wrap text-[#8693A2]">
+          Para que su depósito a plazo se haga efectivo deberá realizar un pago
+          por transferencia por medio de Servipag a Cooperativa Parinacoop
+          durante las próximas 8 horas desde la realización del depósito a plazo
+        </p>
+        <p>
+          <mat-checkbox formControlName="accept">
+            Acepto las condiciones que conllevan a la operación exitosa del
+            depósito a plazo planificado en esta sección
+          </mat-checkbox>
+        </p>
+        <button
+          [ngClass]="[
+            'h-10 w-72 rounded-full bg-primary-500 text-white transition-colors duration-100',
+            'disabled:bg-primary-100 disabled:text-primary-400',
+            'hover:bg-primary-600',
+            'active:bg-primary-700',
+          ]"
+          [disabled]="simulateSecondForm.invalid || isSubmitting"
+          type="submit"
+        >
+          Contratar depósito a plazo
+        </button>
+      </form>
+    } @else {
+      <mat-spinner></mat-spinner>
+    }
+  }
 </section>

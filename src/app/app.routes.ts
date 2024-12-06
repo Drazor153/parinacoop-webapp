@@ -8,23 +8,21 @@ import { homeGuard } from '@layout/home-layout/guards/home.guard';
 
 export const routes: Routes = [
   {
-    path: ROUTE_TOKENS.AUTH_PATH,
+    path: '',
+    canActivate: [() => !inject(AuthService).isAuthenticated()],
     canMatch: [() => !inject(AuthService).isAuthenticated()],
-    loadComponent: () => import('@layout/auth-layout/auth-layout.component'),
     loadChildren: () => import('./core/auth/auth.routes'),
   },
   {
-    path: ROUTE_TOKENS.CLIENT_PATH,
+    path: '',
     canActivate: [homeGuard],
     canMatch: [homeGuard],
-    loadComponent: () => import('@layout/home-layout/home-layout.component'),
     loadChildren: () => import('@layout/home-layout/home.routes'),
   },
   {
-    path: ROUTE_TOKENS.ADMIN_PATH,
-    canMatch: [adminGuard],
+    path: '',
     canActivate: [adminGuard],
-    loadComponent: () => import('@layout/admin-layout/admin-layout.component'),
+    canMatch: [adminGuard],
     loadChildren: () => import('@layout/admin-layout/admin.routes'),
   },
   {

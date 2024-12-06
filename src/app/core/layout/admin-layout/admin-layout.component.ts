@@ -28,13 +28,16 @@ type NavItem = {
 export default class AdminLayoutComponent {
   navItems: NavItem[] = [
     {
+      label: 'Inicio',
+      link: ROUTE_TOKENS.ADMIN_HOME,
+    },
+    {
       label: 'Clientes',
       link: ROUTE_TOKENS.ADMIN_CLIENTS,
-    }
+    },
   ];
   @ViewChild('linkBackdrop')
   linkBackdrop?: ElementRef<HTMLDivElement>;
-
   private routerSubscription?: Subscription;
 
   constructor(

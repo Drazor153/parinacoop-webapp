@@ -9,7 +9,7 @@ import { Dap } from '../../models/dap.model';
   providedIn: 'root',
 })
 export class NewDapService {
-  private termOptionsSubject = new BehaviorSubject<TermOption[]>([]);
+  private termOptionsSubject = new BehaviorSubject<TermOption[] | null>(null);
   termOptions$ = this.termOptionsSubject.asObservable();
 
   constructor(
@@ -20,11 +20,16 @@ export class NewDapService {
     console.log(initialAmount);
 
     this.httpClient
-      .post<{ sDaps: TermOption[] }>('dap/simulate', { type, initialAmount })
+      .post<{ sDaps: TermOption[] }>('dap/simulate', { type, initialAmount }).pipe(delay(500))
       .subscribe((res) => {
         this.termOptionsSubject.next(res.sDaps);
       });
   }
+
+  resetTermOptions(): void {
+    this.termOptionsSubject.next(null);
+  }
+
   createDap(data: CreateDap): Observable<any> {
     return this.httpClient.post<{ dap: Dap }>('dap', data);
   }

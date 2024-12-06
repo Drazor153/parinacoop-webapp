@@ -64,10 +64,10 @@ export default class LoginComponent implements OnInit, OnDestroy {
     this.loginService.login(credentials).subscribe({
       next: (response) => {
         console.log(response.accessToken);
-        this.isSubmitting = false;
         response.isClient
           ? this.router.navigate([ROUTE_TOKENS.CLIENT_PATH])
           : this.router.navigate([ROUTE_TOKENS.ADMIN_PATH]);
+        this.isSubmitting = false;
       },
       error: ({ error }) => {
         this.loginErrorMsg = error.message;

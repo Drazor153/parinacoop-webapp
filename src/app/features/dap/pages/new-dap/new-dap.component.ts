@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   FormControl,
@@ -5,24 +6,22 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { AsyncPipe, NgClass } from '@angular/common';
+import { Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { FormFieldComponent } from '@app/shared/components';
-import { NewDapService } from './new-dap.service';
-import { TermOption } from './models/TermOption';
-import {
-  AsyncPipe,
-  CurrencyPipe,
-  DatePipe,
-  NgClass,
-  PercentPipe,
-} from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
+
+import { FormFieldComponent } from '@app/shared/components';
 import { AuthService } from '@app/core/auth/services/auth.service';
 import { ROUTE_TOKENS } from '@app/route-tokens';
+
+import { NewDapService } from './new-dap.service';
+import { TermOption } from './models/TermOption';
+import { TermOptionComponent } from './components/term-option/term-option.component';
+import { ButtonSolidDirective } from '@app/shared/directives/buttons/button-solid.directive';
 
 @Component({
   selector: 'app-new-dap',
@@ -34,18 +33,18 @@ import { ROUTE_TOKENS } from '@app/route-tokens';
     ReactiveFormsModule,
     MatCheckboxModule,
     FormFieldComponent,
-    DatePipe,
-    PercentPipe,
-    CurrencyPipe,
+    TermOptionComponent,
     AsyncPipe,
+    MatProgressSpinnerModule,
     NgClass,
+    ButtonSolidDirective,
   ],
   templateUrl: './new-dap.component.html',
 })
 export default class NewDapComponent implements OnInit, OnDestroy {
   public simulateFirstForm = new FormGroup({
     type: new FormControl('', [Validators.required]),
-    initialAmount: new FormControl(0, [
+    initialAmount: new FormControl('', [
       Validators.required,
       Validators.min(50000),
     ]),
@@ -59,8 +58,10 @@ export default class NewDapComponent implements OnInit, OnDestroy {
     return this.simulateSecondForm.controls.termOption.value;
   }
 
-  termOptions$?: Observable<TermOption[]>;
+  termOptions$?: Observable<TermOption[] | null>;
   isLoadingTermOptions = false;
+  firstFormSubmitted = false;
+  isSubmitting = false;
 
   constructor(
     private authService: AuthService,
@@ -71,13 +72,13 @@ export default class NewDapComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.termOptions$ = this.newDapService.termOptions$;
   }
-  ngOnDestroy(): void {
-      
-  }
+  ngOnDestroy(): void {}
 
   getTermOptions(): void {
+    this.newDapService.resetTermOptions();
     const { type, initialAmount } = this.simulateFirstForm.value;
     this.newDapService.getTermOptions(type!, +initialAmount!);
+    this.firstFormSubmitted = true;
   }
 
   selectTermOption(val: TermOption): void {
@@ -85,6 +86,7 @@ export default class NewDapComponent implements OnInit, OnDestroy {
   }
 
   handleSubmit(): void {
+    this.isSubmitting = true;
     const { initialAmount, type } = this.simulateFirstForm.value;
 
     const days = +this.simulateSecondForm.value.termOption!.days;
@@ -101,9 +103,11 @@ export default class NewDapComponent implements OnInit, OnDestroy {
           alert('DAP creado correctamente');
           console.log(response);
           this.router.navigate([ROUTE_TOKENS.CLIENT_PATH, ROUTE_TOKENS.DAP]);
+          this.isSubmitting = false;
         },
         error: (error) => {
           alert('Ha ocurrido un error');
+          this.isSubmitting = false;
           console.error(error);
         },
       });
