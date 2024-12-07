@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { filter, Observable, Subject, takeUntil } from 'rxjs';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   FormControl,
@@ -57,11 +57,11 @@ export default class NewDapComponent implements OnInit, OnDestroy {
   get selectedTermOption(): TermOption | null {
     return this.simulateSecondForm.controls.termOption.value;
   }
-
+  onDestroy$ = new Subject<void>();
   termOptions$?: Observable<TermOption[] | null>;
-  isLoadingTermOptions = false;
   firstFormSubmitted = false;
   isSubmitting = false;
+  private userRun: number = 0;
 
   constructor(
     private authService: AuthService,
@@ -71,8 +71,19 @@ export default class NewDapComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.termOptions$ = this.newDapService.termOptions$;
+    this.authService.currentUser$
+      .pipe(
+        takeUntil(this.onDestroy$),
+        filter((user) => user !== null),
+      )
+      .subscribe((user) => {
+        this.userRun = user.run;
+      });
   }
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    this.onDestroy$.next();
+    this.onDestroy$.complete();
+  }
 
   getTermOptions(): void {
     this.newDapService.resetTermOptions();
@@ -92,7 +103,7 @@ export default class NewDapComponent implements OnInit, OnDestroy {
     const days = +this.simulateSecondForm.value.termOption!.days;
     this.newDapService
       .createDap({
-        userRun: this.authService.run,
+        userRun: this.userRun,
         currencyType: 'CLP',
         days,
         initialAmount: +initialAmount!,

@@ -5,7 +5,6 @@ import { SpinnerLoaderComponent } from './shared/components/spinner-loader/spinn
 import { EventBusService } from './shared/services/event-bus/event-bus.service';
 import { Subscription } from 'rxjs';
 import { AuthService } from './core/auth/services/auth.service';
-import { ROUTE_TOKENS } from './route-tokens';
 
 @Component({
   selector: 'app-root',
@@ -19,10 +18,10 @@ export class AppComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private eventBusService: EventBusService,
-    private router: Router,
   ) {}
 
   ngOnInit(): void {
+    this.authService.autoLogin();
     this.eventBusSub = this.eventBusService.on('logout', () => {
       this.logout();
     });

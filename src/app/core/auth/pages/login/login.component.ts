@@ -55,6 +55,7 @@ export default class LoginComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     this.isSubmitting = true;
+    this.loginForm.disable();
     const credentials = {
       run: +getRutDigits(this.loginForm.value.run!),
       password: this.loginForm.value.password!,
@@ -68,10 +69,12 @@ export default class LoginComponent implements OnInit, OnDestroy {
           ? this.router.navigate([ROUTE_TOKENS.CLIENT_PATH])
           : this.router.navigate([ROUTE_TOKENS.ADMIN_PATH]);
         this.isSubmitting = false;
+        this.loginForm.enable();
       },
       error: ({ error }) => {
         this.loginErrorMsg = error.message;
         this.isSubmitting = false;
+        this.loginForm.enable();
       },
     });
   }

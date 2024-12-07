@@ -1,11 +1,5 @@
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import {
-  FormBuilder,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
@@ -16,13 +10,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
-import { Observable, Subscription } from 'rxjs';
+import { filter, Observable, Subject, takeUntil } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 
 import { Commune } from '@features/profile/models/Commune';
 import { runValidator } from '@shared/validators/runValidator';
 import { FormFieldComponent, SpinnerComponent } from '@shared/components';
-import { FormGroupTypeBuilder } from '@shared/types';
 
 import { ProfileService } from './services/profile.service';
 import { Region } from './models/Region';
@@ -34,6 +27,7 @@ import {
   calculateRutVerifier,
 } from '@fdograph/rut-utilities';
 import { UpdateProfileDto } from './interfaces/update-profile.dto';
+import { AuthService } from '@app/core/auth/services/auth.service';
 
 @Component({
   selector: 'app-profile',
@@ -70,13 +64,14 @@ export default class ProfileComponent implements OnInit, OnDestroy {
 
   regions$?: Observable<Region[]>;
   communes$?: Observable<Commune[]>;
-  userProfileSubscription?: Subscription;
+  onDestroy$ = new Subject<void>();
 
   loading = false;
   isEditing = false;
   isSubmitting = false;
 
   constructor(
+    private authService: AuthService,
     private profileService: ProfileService,
     private locationService: LocationService,
   ) {}
@@ -84,49 +79,59 @@ export default class ProfileComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.profileForm.disable();
     this.loading = true;
-    this.profileService.getCurrentProfile();
     this.regions$ = this.locationService.regions$;
     this.communes$ = this.locationService.communes$;
 
-    this.userProfileSubscription = this.profileService.userProfile$.subscribe({
-      next: (data) => {
-        if (data) {
-          console.log(data.run);
-          const runDigits = `${data.run}${calculateRutVerifier(data.run.toString())}`;
-          this.profileForm.patchValue({
-            ...data,
-            run: formatRut(runDigits, RutFormat.DOTS_DASH),
-          });
-          this.loading = false;
-          this.getRegions();
-          this.getCommunes(data.regionId);
-        }
-      },
-    });
+    this.authService.currentUser$
+      .pipe(
+        takeUntil(this.onDestroy$),
+        filter((user) => user !== null),
+      )
+      .subscribe((user) => this.profileService.getCurrentProfile(user.run));
+
+    this.profileService.userProfile$
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe({
+        next: (data) => {
+          if (data) {
+            console.log(data.run);
+            const runDigits = `${data.run}${calculateRutVerifier(data.run.toString())}`;
+            this.profileForm.patchValue({
+              ...data,
+              run: formatRut(runDigits, RutFormat.DOTS_DASH),
+            });
+            this.loading = false;
+            this.getRegions();
+            this.getCommunes(data.regionId);
+          }
+        },
+      });
   }
 
   ngOnDestroy(): void {
-    this.userProfileSubscription?.unsubscribe();
+    this.onDestroy$.next();
+    this.onDestroy$.complete();
   }
 
   onSubmit(): void {
     if (this.profileForm.invalid) return;
     this.isSubmitting = true;
     this.profileForm.disable();
+    const profileValue = this.profileForm.value;
 
     const newData: UpdateProfileDto = {
       run: +getRutDigits(this.fc('run').value),
-      documentNumber: this.fc('documentNumber').value,
-      names: this.fc('names').value,
-      firstLastName: this.fc('firstLastName').value,
-      secondLastName: this.fc('secondLastName').value,
-      email: this.fc('email').value,
-      cellphone: this.fc('cellphone').value,
-      street: this.fc('street').value,
-      number: this.fc('number').value,
-      detail: this.fc('detail').value,
-      regionId: this.fc('regionId').value,
-      communeId: this.fc('communeId').value,
+      documentNumber: profileValue.documentNumber!,
+      names: profileValue.names!,
+      firstLastName: profileValue.firstLastName!,
+      secondLastName: profileValue.secondLastName!,
+      email: profileValue.email!,
+      cellphone: profileValue.cellphone!,
+      street: profileValue.street!,
+      number: profileValue.number!,
+      detail: profileValue.detail!,
+      regionId: profileValue.regionId!,
+      communeId: profileValue.communeId!,
     };
 
     this.profileService.updateProfile(newData).subscribe({

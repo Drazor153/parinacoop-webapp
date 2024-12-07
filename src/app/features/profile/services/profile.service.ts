@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, delay, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, delay, Observable, of, take, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ProfileResponse } from '../interfaces/profile.response';
 import { AuthService } from '@app/core/auth/services/auth.service';
@@ -15,19 +15,18 @@ export class ProfileService {
   public userProfile$ = this.userProfileSubject.asObservable();
 
   constructor(
-    private authService: AuthService,
     private httpClient: HttpClient,
   ) {}
 
-  getCurrentProfile(): void {
+  getCurrentProfile(run: number): void {
     if (this.userProfileSubject.value) return;
     this.httpClient
-      .get<{ profile: ProfileResponse }>(`profile/${this.authService.run}`)
+      .get<{ profile: ProfileResponse }>(`profile/${run}`)
       .subscribe({
         next: (profileData) => {
           this.userProfileSubject.next(profileData.profile);
         },
-      });
+      }); 
   }
 
   resetProfile(): void {

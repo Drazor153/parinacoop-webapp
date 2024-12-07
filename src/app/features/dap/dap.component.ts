@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SvgIconComponent } from '@app/shared/components';
 import { DapService } from './dap.service';
-import { Observable, Subscription } from 'rxjs';
+import { filter, Observable, Subject, Subscription, takeUntil } from 'rxjs';
 import { Dap } from './models/dap.model';
 import { RouterLink } from '@angular/router';
 import { AsyncPipe, CurrencyPipe } from '@angular/common';
 import { DapItemComponent } from './components/dap-item/dap-item.component';
+import { AuthService } from '@app/core/auth/services/auth.service';
 
 @Component({
   selector: 'app-dap',
@@ -20,32 +21,35 @@ import { DapItemComponent } from './components/dap-item/dap-item.component';
   templateUrl: './dap.component.html',
 })
 export default class DapComponent implements OnInit, OnDestroy {
-  private dapSubscription?: Subscription;
   userDaps$?: Observable<Dap[] | null>;
+  totals$!: Observable<{ profit: number; activeDaps: number }>;
   totalProfit: number = 0;
   totalDaps: number = 0;
+  private onDestroy$ = new Subject<void>();
 
   isLoading = false;
 
   constructor(
+    private authService: AuthService,
     private dapService: DapService,
   ) {}
 
   ngOnInit(): void {
     this.isLoading = true;
     this.userDaps$ = this.dapService.daps$;
-    this.dapService.getDapList();
-    // this.dapSubscription = this.dapService.getDapList().subscribe((data) => {
-    // this.userDaps = data;
-    //   const { totalActiveDaps, totalProfit } = this.dapService.getTotals(data);
-    //   this.totalDaps = totalActiveDaps;
-    //   this.totalProfit = totalProfit;
-    //   this.isLoading = false;
-    // });
+    this.totals$ = this.dapService.totals$;
+    this.authService.currentUser$
+      .pipe(
+        takeUntil(this.onDestroy$),
+        filter((user) => user !== null),
+      )
+      .subscribe((user) => {
+        this.dapService.getDapList(user.run);
+      });
   }
 
   ngOnDestroy(): void {
-    this.dapSubscription?.unsubscribe();
+    this.onDestroy$.next();
+    this.onDestroy$.complete();
   }
-
 }
