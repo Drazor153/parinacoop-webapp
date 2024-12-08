@@ -1,42 +1,44 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, tap } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { Dap } from './models/dap.model';
-import { dapsMock } from './mock/daps';
-import { DapStatusEnum } from './models/dap-status.enum';
+import { DapStatus } from './models/dap-status.enum';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class DapService {
-  private userDaps: Dap[] | undefined;
+  private dapsSubject = new BehaviorSubject<Dap[] | null>(null);
+  public daps$ = this.dapsSubject.asObservable();
 
-  constructor() {}
+  private initialTotals = { profit: 0, activeDaps: 0 };
+  private totalsSubject = new BehaviorSubject<{
+    profit: number;
+    activeDaps: number;
+  }>(this.initialTotals);
+  public totals$ = this.totalsSubject.asObservable();
 
-  getDapList(): Observable<Dap[]> {
-    if (this.userDaps) {
-      console.log('Returning cached daps');
-      return of(this.userDaps);
-    }
-    return of(dapsMock).pipe(tap((daps) => (this.userDaps = daps)));
+  constructor(private httpClient: HttpClient) {}
+
+  getDapList(run: number): void {
+    this.httpClient.get<{ daps: Dap[] }>(`clients/${run}/daps`).subscribe({
+      next: (response) => {
+        this.dapsSubject.next(response.daps.sort((a, b) => b.id - a.id));
+        this.getTotals(response.daps);
+      },
+    });
   }
 
-  getDapById(id: number): Observable<Dap | undefined> {
-    return of(dapsMock.find((dap) => dap.id === id));
-    // return new Observable((observer) => {
-    //   setTimeout(() => {
-    //     observer.next(dapsMock.find((dap) => dap.id === id));
-    //     observer.complete();
-    //   }, 1000);
-    // });
-  }
-
-  getTotals(dapList: Dap[]): { totalProfit: number; totalActiveDaps: number } {
-    return dapList.reduce(
+  getTotals(dapList: Dap[]): void {
+    const totals = dapList.reduce(
       (previous, current) => {
-        if (current.status !== DapStatusEnum.ACTIVE) return previous;
-        previous.totalActiveDaps += current.initial_amount;
-        previous.totalProfit += current.profit;
+        if (current.status !== DapStatus.ACTIVE) return previous;
+        previous.profit += current.profit;
+        previous.activeDaps += current.initialAmount;
         return previous;
       },
-      { totalProfit: 0, totalActiveDaps: 0 },
+      { profit: 0, activeDaps: 0 },
     );
+    console.log(totals);
+    
+    this.totalsSubject.next(totals);
   }
 }

@@ -28,6 +28,7 @@
       "@app/*": ["src/app/*"],
       "@env/*": ["src/environments/*"],
       "@core/*": ["src/app/core/*"],
+      "@layout/*": ["src/app/core/layout/*"],
       "@shared/*": ["src/app/shared/*"],
       "@features/*": ["src/app/features/*"]
     }

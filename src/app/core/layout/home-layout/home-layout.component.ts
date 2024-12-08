@@ -18,6 +18,7 @@ import { AuthService } from '@app/core/auth/services/auth.service';
 import { SvgIconComponent } from '@app/shared/components';
 import { NgClass } from '@angular/common';
 import { ROUTE_TOKENS } from '@app/route-tokens';
+import { ProfileService } from '@app/features/profile/services/profile.service';
 
 type NavItem = {
   label: string;
@@ -51,14 +52,17 @@ export default class HomeLayoutComponent implements AfterViewInit, OnDestroy {
     {
       label: 'Cuentas de Ahorro',
       link: 'cuentas-de-ahorro',
+      disabled: true,
     },
     {
       label: 'Créditos de Consumo',
       link: 'creditos-de-consumo',
+      disabled: true,
     },
     {
       label: 'Créditos Comerciales',
       link: 'creditos-comerciales',
+      disabled: true,
     },
     {
       label: 'Perfil',
@@ -66,13 +70,14 @@ export default class HomeLayoutComponent implements AfterViewInit, OnDestroy {
     },
   ];
   @ViewChild('linkBackdrop')
-  linkBackdrop: ElementRef<HTMLDivElement> | undefined;
+  linkBackdrop?: ElementRef<HTMLDivElement>;
 
-  private routerSubscription: Subscription | undefined;
+  private routerSubscription?: Subscription;
 
   constructor(
     private readonly router: Router,
     private readonly authService: AuthService,
+    private readonly profileService: ProfileService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -80,6 +85,8 @@ export default class HomeLayoutComponent implements AfterViewInit, OnDestroy {
     this.routerSubscription = this.router.events
       .pipe(filter((event) => event instanceof NavigationStart))
       .subscribe((event) => this.locateLinkBackdrop(event.url));
+
+    // this.profileService.getCurrentProfile();
   }
 
   locateLinkBackdrop(path: string): void {

@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
+  FormControl,
   ReactiveFormsModule,
   ValidatorFn,
   Validators,
@@ -27,7 +28,7 @@ type LoginForm = FormGroupTypeBuilder<{
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass, SpinnerComponent],
+  imports: [ReactiveFormsModule, NgClass, SpinnerComponent, FormFieldComponent],
   templateUrl: './login.component.html',
 })
 export default class LoginComponent implements OnInit, OnDestroy {
@@ -53,22 +54,32 @@ export default class LoginComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    this.router.navigate([ROUTE_TOKENS.CLIENT_PATH, ROUTE_TOKENS.CLIENT_HOME]);
-    // const credentials = {
-    //   run: +getRutDigits(this.loginForm.value.run!),
-    //   password: this.loginForm.value.password!,
-    // };
-    // this.loginErrorMsg = '';
-    // this.isSubmitting = true;
-    // this.loginSubscription = this.loginService.login(credentials).subscribe({
-    //   next: (response) => {
-    //     this.router.navigate(['/home']);
-    //   },
-    //   error: ({ error }) => {
-    //     this.loginErrorMsg = error.message;
-    //     this.isSubmitting = false;
-    //   },
-    // });
+    this.isSubmitting = true;
+    this.loginForm.disable();
+    const credentials = {
+      run: +getRutDigits(this.loginForm.value.run!),
+      password: this.loginForm.value.password!,
+    };
+
+    this.loginErrorMsg = '';
+    this.loginService.login(credentials).subscribe({
+      next: (response) => {
+        console.log(response.accessToken);
+        response.isClient
+          ? this.router.navigate([ROUTE_TOKENS.CLIENT_PATH])
+          : this.router.navigate([ROUTE_TOKENS.ADMIN_PATH]);
+        this.isSubmitting = false;
+        this.loginForm.enable();
+      },
+      error: ({ error }) => {
+        this.loginErrorMsg = error.message;
+        this.isSubmitting = false;
+        this.loginForm.enable();
+      },
+    });
+  }
+
+  fc(name: string): FormControl {
+    return this.loginForm.get(name) as FormControl;
   }
 }
-

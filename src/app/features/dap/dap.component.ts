@@ -1,46 +1,55 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SvgIconComponent } from '@app/shared/components';
 import { DapService } from './dap.service';
-import { Subscription } from 'rxjs';
+import { filter, Observable, Subject, Subscription, takeUntil } from 'rxjs';
 import { Dap } from './models/dap.model';
 import { RouterLink } from '@angular/router';
-import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
-import { DapStatusPipe } from './pipes/dap-status.pipe';
-import { DapStatusEnum } from './models/dap-status.enum';
+import { AsyncPipe, CurrencyPipe } from '@angular/common';
+import { DapItemComponent } from './components/dap-item/dap-item.component';
+import { AuthService } from '@app/core/auth/services/auth.service';
 
 @Component({
   selector: 'app-dap',
   standalone: true,
   imports: [
     SvgIconComponent,
+    DapItemComponent,
     RouterLink,
-    DatePipe,
-    NgClass,
+    AsyncPipe,
     CurrencyPipe,
-    DapStatusPipe,
   ],
   templateUrl: './dap.component.html',
 })
 export default class DapComponent implements OnInit, OnDestroy {
-  private dapSubscription: Subscription | undefined;
-  userDaps!: Dap[];
+  userDaps$?: Observable<Dap[] | null>;
+  totals$!: Observable<{ profit: number; activeDaps: number }>;
   totalProfit: number = 0;
   totalDaps: number = 0;
+  private onDestroy$ = new Subject<void>();
 
-  constructor(private readonly dapService: DapService) {}
+  isLoading = false;
+
+  constructor(
+    private authService: AuthService,
+    private dapService: DapService,
+  ) {}
 
   ngOnInit(): void {
-    this.dapSubscription = this.dapService.getDapList().subscribe((data) => {
-      this.userDaps = data;
-      const { totalActiveDaps, totalProfit } = this.dapService.getTotals(
-        this.userDaps,
-      );
-      this.totalDaps = totalActiveDaps;
-      this.totalProfit = totalProfit;
-    });
+    this.isLoading = true;
+    this.userDaps$ = this.dapService.daps$;
+    this.totals$ = this.dapService.totals$;
+    this.authService.currentUser$
+      .pipe(
+        takeUntil(this.onDestroy$),
+        filter((user) => user !== null),
+      )
+      .subscribe((user) => {
+        this.dapService.getDapList(user.run);
+      });
   }
 
   ngOnDestroy(): void {
-    this.dapSubscription?.unsubscribe();
+    this.onDestroy$.next();
+    this.onDestroy$.complete();
   }
 }

@@ -5,9 +5,9 @@ import { Component, Input } from '@angular/core';
   standalone: true,
   imports: [],
   template: `
-    <div class="grid w-[35rem] grid-cols-[50%_50%] py-1">
-      <span class="inline-block font-medium text-primary-950">{{ label }}</span>
-      <span class="inline-block text-primary-800">{{ value }}</span>
+    <div class="grid w-[20rem] grid-cols-[50%_50%] py-1">
+      <span class="font-medium text-primary-950">{{ label }}</span>
+      <span class="text-primary-800 text-right">{{ value }}</span>
     </div>
   `,
 })

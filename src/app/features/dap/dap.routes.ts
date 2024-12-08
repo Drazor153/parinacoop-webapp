@@ -10,10 +10,6 @@ const routes: Routes = [
     path: ROUTE_TOKENS.NEW_DAP,
     loadComponent: () => import('./pages/new-dap/new-dap.component'),
   },
-  {
-    path: ROUTE_TOKENS.DAP_DETAIL,
-    loadComponent: () => import('./pages/dap-detail/dap-detail.component'),
-  },
 ];
 
 export default routes;
