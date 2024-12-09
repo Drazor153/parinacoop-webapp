@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://parinacoop-api.fjsolutions.online',
+  apiUrl: 'https://parinacoop-api.fjsolutions.online/api',
 };
